@@ -1,5 +1,7 @@
+
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:developer' as developer;
 
 import 'package:multi_image_picker/multi_image_picker.dart';
 
@@ -19,19 +21,30 @@ class _MyAppState extends State<MyApp> {
     super.initState();
   }
 
+  Future goToDetailsPage(BuildContext context, Asset asset) async {
+    String path = await asset.filePath;
+    developer.log(path, name: 'my.app.category');
+  }
+
   Widget buildGridView() {
     return GridView.count(
       crossAxisCount: 3,
       children: List.generate(images.length, (index) {
         Asset asset = images[index];
-        return AssetThumb(
+        return GestureDetector(
+          child: GridTile(child: AssetThumb(
           asset: asset,
           width: 300,
           height: 300,
+        ),),
+          onTap: () {
+            goToDetailsPage(context, asset);
+          },
         );
       }),
     );
   }
+
 
   Future<void> loadAssets() async {
     List<Asset> resultList = List<Asset>();
