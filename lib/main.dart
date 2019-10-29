@@ -1,4 +1,6 @@
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:developer' as developer;
@@ -15,6 +17,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   List<Asset> images = List<Asset>();
   String _error = 'No Error Dectected';
+  int angle = 1;
 
   @override
   void initState() {
@@ -23,20 +26,35 @@ class _MyAppState extends State<MyApp> {
 
   Future goToDetailsPage(BuildContext context, Asset asset) async {
     String path = await asset.filePath;
-    developer.log(path, name: 'my.app.category');
+    developer.log(path, name: 'my.app.main');
+        setState(() {
+      // This call to setState tells the Flutter framework that something has
+      // changed in this State, which causes it to rerun the build method below
+      // so that the display can reflect the updated values. If we changed
+      // _counter without calling setState(), then the build method would not be
+      // called again, and so nothing would appear to happen.
+    angle = (angle + 1) % 4;
+    developer.log(angle.toString());
+    });
   }
 
   Widget buildGridView() {
     return GridView.count(
       crossAxisCount: 3,
+      mainAxisSpacing: 3,
       children: List.generate(images.length, (index) {
         Asset asset = images[index];
         return GestureDetector(
-          child: GridTile(child: AssetThumb(
+          child: GridTile(
+            child: Transform.rotate(
+              angle: pi/angle,
+     child: AssetThumb(
           asset: asset,
           width: 300,
           height: 300,
-        ),),
+        )
+            )
+          ),
           onTap: () {
             goToDetailsPage(context, asset);
           },
