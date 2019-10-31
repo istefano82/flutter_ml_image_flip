@@ -15,21 +15,21 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   List<Asset> images = List<Asset>();
-  Map<Asset, int> imagesAnglesMap = Map();
+  List<int> imageAngles;
   String _error = 'No Error Dectected';
-  int degrees = 0;
 
   @override
   void initState() {
     super.initState();
   }
 
-  Future goToDetailsPage(BuildContext context, Asset asset) async {
+  Future goToDetailsPage(
+      BuildContext context, Asset asset, int angleIndex) async {
     // String path = await asset.filePath;
     // developer.log(path, name: 'my.app.main');
     setState(() {
-      degrees = (degrees + 90) % 360;
-      developer.log(degrees.toString(), name: 'my.app.main');
+      imageAngles[angleIndex] = (imageAngles[angleIndex] + 90) % 360;
+      developer.log(imageAngles[angleIndex].toString(), name: 'my.app.main');
     });
   }
 
@@ -42,7 +42,7 @@ class _MyAppState extends State<MyApp> {
         return GestureDetector(
           child: GridTile(
               child: Transform.rotate(
-                  angle: degrees * pi / 180,
+                  angle: imageAngles[index] * pi / 180,
                   // @TODO Use RotationTransition animation for eye candy
                   child: AssetThumb(
                     asset: asset,
@@ -50,7 +50,7 @@ class _MyAppState extends State<MyApp> {
                     height: 300,
                   ))),
           onTap: () {
-            goToDetailsPage(context, asset);
+            goToDetailsPage(context, asset, index);
           },
         );
       }),
@@ -63,7 +63,7 @@ class _MyAppState extends State<MyApp> {
 
     try {
       resultList = await MultiImagePicker.pickImages(
-        maxImages: 300,
+        maxImages: 15,
         enableCamera: true,
         selectedAssets: images,
         cupertinoOptions: CupertinoOptions(takePhotoIcon: "chat"),
@@ -91,9 +91,7 @@ class _MyAppState extends State<MyApp> {
 
     setState(() {
       images = resultList;
-      var angles = new List<int>.generate(images.length, (int index) => 0);
-      imagesAnglesMap = new Map.fromIterables(images, angles);
-      developer.log(imagesAnglesMap.toString());
+      imageAngles = new List<int>.generate(images.length, (int index) => 0);
       _error = error;
     });
   }
@@ -112,9 +110,19 @@ class _MyAppState extends State<MyApp> {
               child: Text("Pick images"),
               onPressed: loadAssets,
             ),
+            RaisedButton(
+              child: Text("Flip Images"),
+              onPressed:
+                  null, //TODO Figure out how to pass the images for ML classification
+            ),
             Expanded(
               child: buildGridView(),
-            )
+            ),
+            RaisedButton(
+              child: Text("Save Images"),
+              onPressed:
+                  null, //TODO Figure out how to pass the images for ML classification
+            ),
           ],
         ),
       ),
