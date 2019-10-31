@@ -121,7 +121,7 @@ class _MyAppState extends State<MyApp> {
             RaisedButton(
               child: Text("Save Images"),
               onPressed:
-                  null, //TODO Figure out how to pass the images for ML classification
+                  null, //TODO Figure out how to rotate actual image assets and save them
             ),
           ],
         ),
