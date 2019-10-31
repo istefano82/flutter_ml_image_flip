@@ -1,4 +1,3 @@
-
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -16,8 +15,9 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   List<Asset> images = List<Asset>();
+  Map<Asset, int> imagesAnglesMap = Map();
   String _error = 'No Error Dectected';
-  int angle = 1;
+  int degrees = 0;
 
   @override
   void initState() {
@@ -25,16 +25,11 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future goToDetailsPage(BuildContext context, Asset asset) async {
-    String path = await asset.filePath;
-    developer.log(path, name: 'my.app.main');
-        setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-    angle = (angle + 1) % 4;
-    developer.log(angle.toString());
+    // String path = await asset.filePath;
+    // developer.log(path, name: 'my.app.main');
+    setState(() {
+      degrees = (degrees + 90) % 360;
+      developer.log(degrees.toString(), name: 'my.app.main');
     });
   }
 
@@ -46,15 +41,14 @@ class _MyAppState extends State<MyApp> {
         Asset asset = images[index];
         return GestureDetector(
           child: GridTile(
-            child: Transform.rotate(
-              angle: pi/angle,
-     child: AssetThumb(
-          asset: asset,
-          width: 300,
-          height: 300,
-        )
-            )
-          ),
+              child: Transform.rotate(
+                  angle: degrees * pi / 180,
+                  // @TODO Use RotationTransition animation for eye candy
+                  child: AssetThumb(
+                    asset: asset,
+                    width: 300,
+                    height: 300,
+                  ))),
           onTap: () {
             goToDetailsPage(context, asset);
           },
@@ -62,7 +56,6 @@ class _MyAppState extends State<MyApp> {
       }),
     );
   }
-
 
   Future<void> loadAssets() async {
     List<Asset> resultList = List<Asset>();
@@ -98,6 +91,9 @@ class _MyAppState extends State<MyApp> {
 
     setState(() {
       images = resultList;
+      var angles = new List<int>.generate(images.length, (int index) => 0);
+      imagesAnglesMap = new Map.fromIterables(images, angles);
+      developer.log(imagesAnglesMap.toString());
       _error = error;
     });
   }
