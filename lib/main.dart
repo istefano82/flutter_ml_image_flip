@@ -1,10 +1,14 @@
+import 'dart:io';
 import 'dart:math';
-
+import 'package:path/path.dart' as p;
+import 'package:quiver/iterables.dart';
+import 'package:image/image.dart' as imageLib;
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:developer' as developer;
 
 import 'package:multi_image_picker/multi_image_picker.dart';
+
 
 void main() => runApp(new MyApp());
 
@@ -121,11 +125,27 @@ class _MyAppState extends State<MyApp> {
             RaisedButton(
               child: Text("Save Images"),
               onPressed:
-                  null, //TODO Figure out how to rotate actual image assets and save them!
+                  rotateSaveImages,
             ),
           ],
         ),
       ),
     );
   }
+
+  Future<void> rotateSaveImages() async {
+    for (var image in enumerate(images)) {    
+      String originalImagePath = await image.value.filePath;
+      String newImagePath = p.join(p.dirname(originalImagePath),
+          'flipped_' + p.basename(originalImagePath));
+      var angle = imageAngles[image.index];
+      imageLib.Image originalImage =
+          imageLib.decodeImage(File(originalImagePath).readAsBytesSync());
+      imageLib.Image rotatedImage = imageLib.copyRotate(originalImage, angle);
+       //TODO Figure out why on the emulator newly saved images are shown only after emulator restart.
+      File('$newImagePath')..writeAsBytes(imageLib.encodeJpg(rotatedImage));
+      developer.log(newImagePath);
+    }
+  }
+
 }
