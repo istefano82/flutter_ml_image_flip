@@ -3,9 +3,12 @@ import 'dart:math';
 import 'package:path/path.dart' as p;
 import 'package:quiver/iterables.dart';
 import 'package:image/image.dart' as imageLib;
+import 'package:tflite/tflite.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:developer' as developer;
+import 'package:flutter/services.dart';
+import 'dart:typed_data';
 
 import 'package:multi_image_picker/multi_image_picker.dart';
 
@@ -21,10 +24,14 @@ class _MyAppState extends State<MyApp> {
   List<Asset> images = List<Asset>();
   List<int> imageAngles;
   String _error = 'No Error Dectected';
+  List _recognitions;
+
 
   @override
   void initState() {
     super.initState();
+    loadModel().then((val) {
+    });
   }
 
   Future goToDetailsPage(
@@ -64,7 +71,6 @@ class _MyAppState extends State<MyApp> {
   Future<void> loadAssets() async {
     List<Asset> resultList = List<Asset>();
     String error = 'No Error Dectected';
-
     try {
       resultList = await MultiImagePicker.pickImages(
         maxImages: 15,
@@ -117,7 +123,7 @@ class _MyAppState extends State<MyApp> {
             RaisedButton(
               child: Text("Flip Images"),
               onPressed:
-                  null, //TODO Figure out how to pass the images for ML classification
+                  predictImage, //TODO Figure out how to pass the images for ML classification
             ),
             Expanded(
               child: buildGridView(),
@@ -147,5 +153,69 @@ class _MyAppState extends State<MyApp> {
       developer.log(newImagePath);
     }
   }
+    Uint8List imageToByteListFloat32(
+      imageLib.Image image, int inputSize, double mean, double std) {
+    var convertedBytes = Float32List(1 * inputSize * inputSize * 3);
+    var buffer = Float32List.view(convertedBytes.buffer);
+    int pixelIndex = 0;
+    for (var i = 0; i < inputSize; i++) {
+      for (var j = 0; j < inputSize; j++) {
+        var pixel = image.getPixel(j, i);
+        buffer[pixelIndex++] = (imageLib.getRed(pixel) - mean) / std;
+        buffer[pixelIndex++] = (imageLib.getGreen(pixel) - mean) / std;
+        buffer[pixelIndex++] = (imageLib.getBlue(pixel) - mean) / std;
+      }
+    }
+    return convertedBytes.buffer.asUint8List();
+  }
 
+  // Future predictImage() async {
+  //       String imgPath = await images[0].filePath;
+  //   var imageBytes = (await rootBundle.load(imgPath)).buffer;
+  //   imageLib.Image oriImage = imageLib.decodeJpg(imageBytes.asUint8List());
+  //   imageLib.Image resizedImage = imageLib.copyResize(oriImage, width: 224, height: 224);
+  //   var recognitions = await Tflite.runModelOnBinary(
+  //     binary: imageToByteListFloat32(resizedImage, 224, 127.5, 127.5),
+  //     numResults: 6,
+  //     threshold: 0.05,
+  //   );
+  //   setState(() {
+  //     _recognitions = recognitions;
+  //   });
+  //       developer.log(_recognitions.toString(), name: 'my.app.main');
+
+  // }
+  Future recognizeImage() async {
+    String imgPath = await images[0].filePath;
+    var recognitions = await Tflite.runModelOnImage(
+      path: imgPath,
+      numResults: 6,
+      threshold: 0.05,
+      imageMean: 127.5,
+      imageStd: 127.5,
+    );
+    setState(() {
+      _recognitions = recognitions;
+    });
+    developer.log(_recognitions.toString(), name: 'my.app.main');
+  }
+  
+  Future predictImage() async {
+      await recognizeImage();
+    // await recognizeImageBinary(image);
+  }
+
+  Future loadModel() async {
+    Tflite.close();
+    try {
+      String res;
+          res = await Tflite.loadModel(
+            model: "assets/mobilenet_v1_1.0_224.tflite",
+            labels: "assets/mobilenet_v1_1.0_224.txt",
+          );
+      print('Loaded model $res');
+    } on PlatformException {
+      print('Failed to load model.');
+    }
+  }
 }
