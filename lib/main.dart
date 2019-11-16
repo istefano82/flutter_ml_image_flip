@@ -8,10 +8,8 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:developer' as developer;
 import 'package:flutter/services.dart';
-import 'dart:typed_data';
 
 import 'package:multi_image_picker/multi_image_picker.dart';
-
 
 void main() => runApp(new MyApp());
 
@@ -25,13 +23,17 @@ class _MyAppState extends State<MyApp> {
   List<int> imageAngles;
   String _error = 'No Error Dectected';
   List _recognitions;
-
+  Map _labelAngleMap = {
+    'left': 90,
+    'right': 270,
+    'upright': 0,
+    'upsidedown': 180
+  };
 
   @override
   void initState() {
     super.initState();
-    loadModel().then((val) {
-    });
+    loadModel().then((val) {});
   }
 
   Future goToDetailsPage(
@@ -122,16 +124,14 @@ class _MyAppState extends State<MyApp> {
             ),
             RaisedButton(
               child: Text("Flip Images"),
-              onPressed:
-                  predictImage, //TODO Figure out how to pass the images for ML classification
+              onPressed: flipImages,
             ),
             Expanded(
               child: buildGridView(),
             ),
             RaisedButton(
               child: Text("Save Images"),
-              onPressed:
-                  rotateSaveImages,
+              onPressed: rotateSaveImages,
             ),
           ],
         ),
@@ -140,7 +140,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> rotateSaveImages() async {
-    for (var image in enumerate(images)) {    
+    for (var image in enumerate(images)) {
       String originalImagePath = await image.value.filePath;
       String newImagePath = p.join(p.dirname(originalImagePath),
           'flipped_' + p.basename(originalImagePath));
@@ -148,71 +148,42 @@ class _MyAppState extends State<MyApp> {
       imageLib.Image originalImage =
           imageLib.decodeImage(File(originalImagePath).readAsBytesSync());
       imageLib.Image rotatedImage = imageLib.copyRotate(originalImage, angle);
-       //TODO Figure out why on the emulator newly saved images are shown only after emulator restart.
+      //TODO Figure out why on the emulator newly saved images are shown only after emulator restart.
       File('$newImagePath')..writeAsBytes(imageLib.encodeJpg(rotatedImage));
       developer.log(newImagePath);
     }
   }
-    Uint8List imageToByteListFloat32(
-      imageLib.Image image, int inputSize, double mean, double std) {
-    var convertedBytes = Float32List(1 * inputSize * inputSize * 3);
-    var buffer = Float32List.view(convertedBytes.buffer);
-    int pixelIndex = 0;
-    for (var i = 0; i < inputSize; i++) {
-      for (var j = 0; j < inputSize; j++) {
-        var pixel = image.getPixel(j, i);
-        buffer[pixelIndex++] = (imageLib.getRed(pixel) - mean) / std;
-        buffer[pixelIndex++] = (imageLib.getGreen(pixel) - mean) / std;
-        buffer[pixelIndex++] = (imageLib.getBlue(pixel) - mean) / std;
-      }
+
+  Future flipImages() async {
+    for (var image in enumerate(images)) {
+      String imgPath = await image.value.filePath;
+      var recognitions = await Tflite.runModelOnImage(
+        path: imgPath,
+        numResults: 1,
+        threshold: 0.05,
+        imageMean: 127.5,
+        imageStd: 127.5,
+      );
+      developer.log(recognitions[0]['label'].toString(), name: 'my.app.main');
+      var predLabel = recognitions[0]['label'];
+      // TODO: Make sure images are only rotated if confidence is above 90% for example
+      var newAngle = _labelAngleMap[predLabel];
+      imageAngles[image.index] += newAngle;
+      developer.log(newAngle.toString(), name: 'my.app.main');
+      setState(() {
+      });
     }
-    return convertedBytes.buffer.asUint8List();
   }
 
-  // Future predictImage() async {
-  //       String imgPath = await images[0].filePath;
-  //   var imageBytes = (await rootBundle.load(imgPath)).buffer;
-  //   imageLib.Image oriImage = imageLib.decodeJpg(imageBytes.asUint8List());
-  //   imageLib.Image resizedImage = imageLib.copyResize(oriImage, width: 224, height: 224);
-  //   var recognitions = await Tflite.runModelOnBinary(
-  //     binary: imageToByteListFloat32(resizedImage, 224, 127.5, 127.5),
-  //     numResults: 6,
-  //     threshold: 0.05,
-  //   );
-  //   setState(() {
-  //     _recognitions = recognitions;
-  //   });
-  //       developer.log(_recognitions.toString(), name: 'my.app.main');
-
-  // }
-  Future recognizeImage() async {
-    String imgPath = await images[0].filePath;
-    var recognitions = await Tflite.runModelOnImage(
-      path: imgPath,
-      numResults: 6,
-      threshold: 0.05,
-      imageMean: 127.5,
-      imageStd: 127.5,
-    );
-    setState(() {
-      _recognitions = recognitions;
-    });
-    developer.log(_recognitions.toString(), name: 'my.app.main');
-  }
-  
-  Future predictImage() async {
-      await recognizeImage();
-    // await recognizeImageBinary(image);
-  }
 
   Future loadModel() async {
     Tflite.close();
     try {
       String res;
-          res = await Tflite.loadModel(
-            model: "assets/mobilenet_v1_1.0_224.tflite",
-            labels: "assets/mobilenet_v1_1.0_224.txt",
-          );
+      res = await Tflite.loadModel(
+        model: "assets/imageflip.tflite",
+        labels: "assets/imageflip.txt",
+      );
       print('Loaded model $res');
     } on PlatformException {
       print('Failed to load model.');
