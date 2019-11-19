@@ -22,7 +22,6 @@ class _MyAppState extends State<MyApp> {
   List<Asset> images = List<Asset>();
   List<int> imageAngles;
   String _error = 'No Error Dectected';
-  List _recognitions;
   Map _labelAngleMap = {
     'left': 90,
     'right': 270,
