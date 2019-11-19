@@ -149,7 +149,7 @@ class _MyAppState extends State<MyApp> {
           imageLib.decodeImage(File(originalImagePath).readAsBytesSync());
       imageLib.Image rotatedImage = imageLib.copyRotate(originalImage, angle);
       //TODO Figure out why on the emulator newly saved images are shown only after emulator restart.
-      File('$newImagePath')..writeAsBytes(imageLib.encodeJpg(rotatedImage));
+      File('$newImagePath').writeAsBytesSync(imageLib.encodeJpg(rotatedImage));
       developer.log(newImagePath);
     }
   }
@@ -173,6 +173,7 @@ class _MyAppState extends State<MyApp> {
       setState(() {
       });
     }
+    await Tflite.close();
   }
 
 
