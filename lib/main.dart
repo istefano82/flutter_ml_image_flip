@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:developer' as developer;
 import 'package:flutter/services.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 
 import 'package:multi_image_picker/multi_image_picker.dart';
 
@@ -148,7 +149,9 @@ class _MyAppState extends State<MyApp> {
           imageLib.decodeImage(File(originalImagePath).readAsBytesSync());
       imageLib.Image rotatedImage = imageLib.copyRotate(originalImage, angle);
       //TODO Figure out why on the emulator newly saved images are shown only after emulator restart.
-      File('$newImagePath').writeAsBytesSync(imageLib.encodeJpg(rotatedImage));
+      // File('$newImagePath').writeAsBytesSync(imageLib.encodePng(rotatedImage));
+      var x = imageLib.encodePng(rotatedImage);
+      await ImageGallerySaver.saveImage(x);
       developer.log(newImagePath);
     }
   }

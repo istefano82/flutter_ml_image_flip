@@ -29,6 +29,7 @@ dependencies:
   path: ^1.6.4
   quiver: '>=2.0.0 <3.0.0'
   tflite: 1.0.4
+  image_gallery_saver: ^1.1.0
 
 dev_dependencies:
   flutter_test:
