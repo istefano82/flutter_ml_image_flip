@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:math';
 import 'package:path/path.dart' as p;
 import 'package:quiver/iterables.dart';
-import 'package:image/image.dart' as imageLib;
 import 'package:tflite/tflite.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
@@ -10,8 +9,6 @@ import 'dart:developer' as developer;
 import 'package:flutter/services.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_editor/image_editor.dart';
-import 'package:path_provider/path_provider.dart';
-
 import 'package:multi_image_picker/multi_image_picker.dart';
 
 void main() => runApp(new MyApp());
