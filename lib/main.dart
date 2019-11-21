@@ -9,6 +9,8 @@ import 'dart:async';
 import 'dart:developer' as developer;
 import 'package:flutter/services.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:image_editor/image_editor.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'package:multi_image_picker/multi_image_picker.dart';
 
@@ -145,14 +147,15 @@ class _MyAppState extends State<MyApp> {
       String newImagePath = p.join(p.dirname(originalImagePath),
           'flipped_' + p.basename(originalImagePath));
       var angle = imageAngles[image.index];
-      imageLib.Image originalImage =
-          imageLib.decodeImage(File(originalImagePath).readAsBytesSync());
-      imageLib.Image rotatedImage = imageLib.copyRotate(originalImage, angle);
-      //TODO Figure out why on the emulator newly saved images are shown only after emulator restart.
-      // File('$newImagePath').writeAsBytesSync(imageLib.encodePng(rotatedImage));
-      var x = imageLib.encodePng(rotatedImage);
-      await ImageGallerySaver.saveImage(x);
-      developer.log(newImagePath);
+      ImageEditorOption option = ImageEditorOption();
+      option.addOption(RotateOption(angle));
+      option.outputFormat = OutputFormat.png(100);
+      final result = await ImageEditor.editFileImage(
+        file: File(originalImagePath),
+        imageEditorOption: option,
+      );
+      // @TODO: Figure out how to save images to gallery and for them to become instat visible
+      await ImageGallerySaver.saveImage(result);
     }
   }
 
@@ -172,12 +175,10 @@ class _MyAppState extends State<MyApp> {
       var newAngle = _labelAngleMap[predLabel];
       imageAngles[image.index] += newAngle;
       developer.log(newAngle.toString(), name: 'my.app.main');
-      setState(() {
-      });
+      setState(() {});
     }
     await Tflite.close();
   }
-
 
   Future loadModel() async {
     Tflite.close();
