@@ -30,7 +30,12 @@ dependencies:
   tflite: 1.0.4
   image_gallery_saver: ^1.1.0
   image_editor: any
-  path_provider: ^0.4.1
+  path_provider: ^1.1.2
+  oktoast: ^2.2.0
+  extended_image: ^0.6.4
+  image_picker: ^0.6.1+8
+
+
 
 
 
@@ -55,8 +60,10 @@ flutter:
   assets:
    - assets/imageflip.tflite
    - assets/imageflip.txt
+   - assets/have-exif-3.jpg
+   - assets/icon.png
 
-  
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 
