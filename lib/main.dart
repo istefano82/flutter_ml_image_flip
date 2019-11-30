@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:math';
-import 'package:path/path.dart' as p;
 import 'package:quiver/iterables.dart';
 import 'package:tflite/tflite.dart';
 import 'package:flutter/material.dart';
@@ -88,7 +87,7 @@ class _MyAppState extends State<MyApp> {
                 child: GridTile(
                     child: Transform.rotate(
                         angle: imageAngles[index] * pi / 180,
-                        // @TODO Use RotationTransition animation for eye candy
+                        // TODO Use RotationTransition animation for eye candy
                         child: AssetThumb(
                           asset: asset,
                           width: 300,
@@ -145,17 +144,16 @@ class _MyAppState extends State<MyApp> {
   Future<void> rotateSaveImages() async {
     for (var image in enumerate(images)) {
       String originalImagePath = await image.value.filePath;
-      String newImagePath = p.join(p.dirname(originalImagePath),
-          'flipped_' + p.basename(originalImagePath));
+
       var angle = imageAngles[image.index];
       ImageEditorOption option = ImageEditorOption();
       option.addOption(RotateOption(angle));
       option.outputFormat = OutputFormat.png(100);
+      // TODO: Use the loaded image getByteData method with edit Image from image_editor to optimize performance.
       final result = await ImageEditor.editFileImage(
         file: File(originalImagePath),
         imageEditorOption: option,
       );
-      // @TODO: Figure out how to save images to gallery and for them to become instat visible
       await ImageGallerySaver.saveImage(result);
     }
   }
