@@ -112,7 +112,7 @@ class _MyAppState extends State<MyApp> {
                 },
                 // onLongPress: _secondPage(context, AdvancedPage(data: data))));
                 onLongPress: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (_) => AdvancedPage(data:),
+                      builder: (_) => AdvancedPage(data:data),
                     ))));
       }),
     );
