@@ -18,9 +18,15 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => new _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
-  List<Asset> images = List<Asset>();
+class Data {
   List<int> imageAngles;
+  Data({this.imageAngles});
+}
+
+class _MyAppState extends State<MyApp> {
+  final data = Data(imageAngles: []);
+  List<Asset> images = List<Asset>();
+  // List<int> imageAngles;
   String _error = 'No Error Dectected';
   Map _labelAngleMap = {
     'left': 90,
@@ -71,10 +77,18 @@ class _MyAppState extends State<MyApp> {
     // String path = await asset.filePath;
     // developer.log(path, name: 'my.app.main');
     setState(() {
-      imageAngles[angleIndex] = (imageAngles[angleIndex] + 90) % 360;
-      developer.log(imageAngles[angleIndex].toString(), name: 'my.app.main');
+      data.imageAngles[angleIndex] = (data.imageAngles[angleIndex] + 90) % 360;
+      developer.log(data.imageAngles[angleIndex].toString(), name: 'my.app.main');
     });
   }
+
+  _secondPage(BuildContext context, Widget page) async {  
+  final dataFromSecondPage = await Navigator.push(
+  context,
+  MaterialPageRoute(builder: (context) => page),
+  ) as Data;  // Here we have the data from the second screen  data.counter = dataFromSecondPage.counter;
+  data.imageAngles = dataFromSecondPage.imageAngles;
+}
 
   Widget buildGridView(BuildContext context) {
     return GridView.count(
@@ -86,7 +100,7 @@ class _MyAppState extends State<MyApp> {
             builder: (context) => GestureDetector(
                 child: GridTile(
                     child: Transform.rotate(
-                        angle: imageAngles[index] * pi / 180,
+                        angle: data.imageAngles[index] * pi / 180,
                         // TODO Use RotationTransition animation for eye candy
                         child: AssetThumb(
                           asset: asset,
@@ -96,8 +110,9 @@ class _MyAppState extends State<MyApp> {
                 onTap: () {
                   rotatePressedImage(context, asset, index);
                 },
+                // onLongPress: _secondPage(context, AdvancedPage(data: data))));
                 onLongPress: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (_) => AdvancedPage(),
+                      builder: (_) => AdvancedPage(data:),
                     ))));
       }),
     );
@@ -136,7 +151,7 @@ class _MyAppState extends State<MyApp> {
 
     setState(() {
       images = resultList;
-      imageAngles = new List<int>.generate(images.length, (int index) => 0);
+      data.imageAngles = new List<int>.generate(images.length, (int index) => 0);
       _error = error;
     });
   }
@@ -145,7 +160,7 @@ class _MyAppState extends State<MyApp> {
     for (var image in enumerate(images)) {
       String originalImagePath = await image.value.filePath;
 
-      var angle = imageAngles[image.index];
+      var angle = data.imageAngles[image.index];
       ImageEditorOption option = ImageEditorOption();
       option.addOption(RotateOption(angle));
       option.outputFormat = OutputFormat.png(100);
@@ -172,7 +187,7 @@ class _MyAppState extends State<MyApp> {
       var predLabel = recognitions[0]['label'];
       // TODO: Make sure images are only rotated if confidence is above 90% for example
       var newAngle = _labelAngleMap[predLabel];
-      imageAngles[image.index] += newAngle;
+      data.imageAngles[image.index] += newAngle;
       developer.log(newAngle.toString(), name: 'my.app.main');
       setState(() {});
     }
