@@ -34,7 +34,7 @@ class AdvancedPage extends StatelessWidget {
     );
   }
   void _modifyAngles(BuildContext context) {
-    data.imageAngles = [1000];
+    data.imageAngles = [180];
     Navigator.pop(context, data);
   }
 }

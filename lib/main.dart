@@ -78,17 +78,21 @@ class _MyAppState extends State<MyApp> {
     // developer.log(path, name: 'my.app.main');
     setState(() {
       data.imageAngles[angleIndex] = (data.imageAngles[angleIndex] + 90) % 360;
-      developer.log(data.imageAngles[angleIndex].toString(), name: 'my.app.main');
+      developer.log(data.imageAngles[angleIndex].toString(),
+          name: 'my.app.main');
     });
   }
 
-  _secondPage(BuildContext context, Widget page) async {  
-  final dataFromSecondPage = await Navigator.push(
-  context,
-  MaterialPageRoute(builder: (context) => page),
-  ) as Data;  // Here we have the data from the second screen  data.counter = dataFromSecondPage.counter;
-  data.imageAngles = dataFromSecondPage.imageAngles;
-}
+  _secondPage(BuildContext context) async {
+    final dataFromSecondPage = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => AdvancedPage(data: data)),
+    ) as Data; // Here we have the data from the second screen  data.counter = dataFromSecondPage.counter;
+    setState(() {
+      data.imageAngles = dataFromSecondPage.imageAngles;
+    });
+    developer.log(data.imageAngles.toString(), name: 'my.app.main._secondPage');
+  }
 
   Widget buildGridView(BuildContext context) {
     return GridView.count(
@@ -98,22 +102,22 @@ class _MyAppState extends State<MyApp> {
         Asset asset = images[index];
         return Builder(
             builder: (context) => GestureDetector(
-                child: GridTile(
-                    child: Transform.rotate(
-                        angle: data.imageAngles[index] * pi / 180,
-                        // TODO Use RotationTransition animation for eye candy
-                        child: AssetThumb(
-                          asset: asset,
-                          width: 300,
-                          height: 300,
-                        ))),
-                onTap: () {
-                  rotatePressedImage(context, asset, index);
-                },
-                // onLongPress: _secondPage(context, AdvancedPage(data: data))));
-                onLongPress: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (_) => AdvancedPage(data:data),
-                    ))));
+                  child: GridTile(
+                      child: Transform.rotate(
+                          angle: data.imageAngles[index] * pi / 180,
+                          // TODO Use RotationTransition animation for eye candy
+                          child: AssetThumb(
+                            asset: asset,
+                            width: 300,
+                            height: 300,
+                          ))),
+                  onTap: () {
+                    rotatePressedImage(context, asset, index);
+                  },
+                  onLongPress: () {
+                    _secondPage(context);
+                  },
+                ));
       }),
     );
   }
@@ -151,7 +155,8 @@ class _MyAppState extends State<MyApp> {
 
     setState(() {
       images = resultList;
-      data.imageAngles = new List<int>.generate(images.length, (int index) => 0);
+      data.imageAngles =
+          new List<int>.generate(images.length, (int index) => 0);
       _error = error;
     });
   }
