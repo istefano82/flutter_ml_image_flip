@@ -84,9 +84,10 @@ class _MyAppState extends State<MyApp> {
   }
 
   _secondPage(BuildContext context) async {
+    final imgPath = await images[0].filePath;
     final dataFromSecondPage = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AdvancedPage(data: data)),
+      MaterialPageRoute(builder: (context) => AdvancedPage(imgPath, data: data)),
     ) as Data; // Here we have the data from the second screen  data.counter = dataFromSecondPage.counter;
     setState(() {
       data.imageAngles = dataFromSecondPage.imageAngles;
