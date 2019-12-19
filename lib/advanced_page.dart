@@ -31,6 +31,7 @@ class AdvancedPage extends StatelessWidget {
                   //TODO: Figure out how to convert multi image picker image bytestream to AssetImage
                   imageProvider: AssetImage(this.imgPath),
                   // Contained = the smallest possible size to fit one dimension of the screen
+                  //TODO DIsable zooming
                   minScale: PhotoViewComputedScale.contained * 0.8,
                   // Covered = the smallest possible size to fit the whole screen
                   maxScale: PhotoViewComputedScale.covered * 2,
