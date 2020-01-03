@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:multi_image_picker/multi_image_picker.dart';
 
 import 'package:photo_view/photo_view.dart';
 
@@ -9,7 +8,8 @@ import 'main.dart';
 class AdvancedPage extends StatelessWidget {
   final Data data;
   final String imgPath;
-  AdvancedPage(this.imgPath, {this.data});
+  final int imgAngleIndex;
+  AdvancedPage(this.imgPath, this.imgAngleIndex, {this.data});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,10 +31,8 @@ class AdvancedPage extends StatelessWidget {
                   //TODO: Figure out how to convert multi image picker image bytestream to AssetImage
                   imageProvider: AssetImage(this.imgPath),
                   // Contained = the smallest possible size to fit one dimension of the screen
-                  //TODO DIsable zooming
-                  minScale: PhotoViewComputedScale.contained * 0.8,
-                  // Covered = the smallest possible size to fit the whole screen
-                  maxScale: PhotoViewComputedScale.covered * 2,
+                  minScale: PhotoViewComputedScale.contained * 1.0,
+                  maxScale: PhotoViewComputedScale.contained * 1.0,
                   enableRotation: true,
                   loadingChild: Center(
                     child: CircularProgressIndicator(),
@@ -54,7 +52,8 @@ class AdvancedPage extends StatelessWidget {
   }
 
   void _modifyAngles(BuildContext context) {
-    data.imageAngles = [180];
+    //TODO: Use the angle value from photoview rotation controller
+    data.imageAngles[this.imgAngleIndex] = 180;
     Navigator.pop(context, data);
   }
 }

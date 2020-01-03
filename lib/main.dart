@@ -83,11 +83,11 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  _secondPage(BuildContext context) async {
-    final imgPath = await images[0].filePath;
+  _secondPage(BuildContext context, Asset asset, int index) async {
+    final imgPath = await asset.filePath;
     final dataFromSecondPage = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AdvancedPage(imgPath, data: data)),
+      MaterialPageRoute(builder: (context) => AdvancedPage(imgPath, index, data: data)),
     ) as Data; // Here we have the data from the second screen  data.counter = dataFromSecondPage.counter;
     setState(() {
       data.imageAngles = dataFromSecondPage.imageAngles;
@@ -116,7 +116,7 @@ class _MyAppState extends State<MyApp> {
                     rotatePressedImage(context, asset, index);
                   },
                   onLongPress: () {
-                    _secondPage(context);
+                    _secondPage(context, asset, index);
                   },
                 ));
       }),
