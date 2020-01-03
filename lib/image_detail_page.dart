@@ -5,11 +5,11 @@ import 'package:photo_view/photo_view.dart';
 
 import 'main.dart';
 
-class AdvancedPage extends StatelessWidget {
+class ImageDetailPage extends StatelessWidget {
   final Data data;
   final String imgPath;
   final int imgAngleIndex;
-  AdvancedPage(this.imgPath, this.imgAngleIndex, {this.data});
+  ImageDetailPage(this.imgPath, this.imgAngleIndex, {this.data});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,7 +43,7 @@ class AdvancedPage extends StatelessWidget {
             RaisedButton(
                 child: Text("Back"),
                 onPressed: () {
-                  _modifyAngles(context); // data back to the first screen},
+                  _updateImageAngles(context); // data back to the first screen},
                 }),
           ],
         ),
@@ -51,7 +51,7 @@ class AdvancedPage extends StatelessWidget {
     );
   }
 
-  void _modifyAngles(BuildContext context) {
+  void _updateImageAngles(BuildContext context) {
     //TODO: Use the angle value from photoview rotation controller
     data.imageAngles[this.imgAngleIndex] = 180;
     Navigator.pop(context, data);

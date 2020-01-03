@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_editor/image_editor.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
-import 'package:fluter_image_flip/advanced_page.dart';
+import 'package:fluter_image_flip/image_detail_page.dart';
 
 void main() => runApp(new MyApp());
 
@@ -87,8 +87,8 @@ class _MyAppState extends State<MyApp> {
     final imgPath = await asset.filePath;
     final dataFromSecondPage = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AdvancedPage(imgPath, index, data: data)),
-    ) as Data; // Here we have the data from the second screen  data.counter = dataFromSecondPage.counter;
+      MaterialPageRoute(builder: (context) => ImageDetailPage(imgPath, index, data: data)),
+    ) as Data;
     setState(() {
       data.imageAngles = dataFromSecondPage.imageAngles;
     });
