@@ -1,3 +1,6 @@
+import 'dart:math';
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -5,11 +8,48 @@ import 'package:photo_view/photo_view.dart';
 
 import 'main.dart';
 
-class ImageDetailPage extends StatelessWidget {
+class ImageDetailPage extends StatefulWidget {
   final Data data;
   final String imgPath;
   final int imgAngleIndex;
   ImageDetailPage(this.imgPath, this.imgAngleIndex, {this.data});
+  @override
+  _ImageDetailPageState createState() =>
+      _ImageDetailPageState(this.imgPath, this.imgAngleIndex, data: data);
+}
+
+class _ImageDetailPageState extends State<ImageDetailPage> {
+  PhotoViewController controller;
+  double rotateCopy;
+  double originalAngleRdians;
+  final Data data;
+  final String imgPath;
+  final int imgAngleIndex;
+
+  _ImageDetailPageState(this.imgPath, this.imgAngleIndex, {this.data});
+
+  @override
+  void initState() {
+    super.initState();
+    originalAngleRdians = data.imageAngles[this.imgAngleIndex];
+    developer.log("original angle from main dart is $originalAngleRdians",
+        name: 'my.app._ImageDetailPageState');
+    controller = PhotoViewController()..outputStateStream.listen(listener);
+    controller.rotation = originalAngleRdians * pi / 180;
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  void listener(PhotoViewControllerValue value) {
+    setState(() {
+      rotateCopy = value.rotation * 180 / pi;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,11 +69,13 @@ class ImageDetailPage extends StatelessWidget {
               child: ClipRect(
                 child: PhotoView(
                   //TODO: Figure out how to convert multi image picker image bytestream to AssetImage
-                  imageProvider: AssetImage(this.imgPath),
+                  imageProvider: AssetImage(imgPath),
                   // Contained = the smallest possible size to fit one dimension of the screen
+                  controller: controller,
                   minScale: PhotoViewComputedScale.contained * 1.0,
                   maxScale: PhotoViewComputedScale.contained * 1.0,
                   enableRotation: true,
+
                   loadingChild: Center(
                     child: CircularProgressIndicator(),
                   ),
@@ -43,8 +85,10 @@ class ImageDetailPage extends StatelessWidget {
             RaisedButton(
                 child: Text("Back"),
                 onPressed: () {
-                  _updateImageAngles(context); // data back to the first screen},
+                  _updateImageAngles(
+                      context); // data back to the first screen},
                 }),
+            Text("Rotation applied: $rotateCopy"),
           ],
         ),
       ),
@@ -52,8 +96,10 @@ class ImageDetailPage extends StatelessWidget {
   }
 
   void _updateImageAngles(BuildContext context) {
-    //TODO: Use the angle value from photoview rotation controller
-    data.imageAngles[this.imgAngleIndex] = 180;
+    developer.log(
+        "Applying new imageAngle to imageAngle array with value: $rotateCopy",
+        name: 'my.app._ImageDetailPageState');
+    data.imageAngles[this.imgAngleIndex] = rotateCopy;
     Navigator.pop(context, data);
   }
 }

@@ -19,14 +19,13 @@ class MyApp extends StatefulWidget {
 }
 
 class Data {
-  List<int> imageAngles;
+  List<double> imageAngles;
   Data({this.imageAngles});
 }
 
 class _MyAppState extends State<MyApp> {
   final data = Data(imageAngles: []);
   List<Asset> images = List<Asset>();
-  // List<int> imageAngles;
   String _error = 'No Error Dectected';
   Map _labelAngleMap = {
     'left': 90,
@@ -92,7 +91,6 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       data.imageAngles = dataFromSecondPage.imageAngles;
     });
-    developer.log(data.imageAngles.toString(), name: 'my.app.main._secondPage');
   }
 
   Widget buildGridView(BuildContext context) {
@@ -157,7 +155,7 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       images = resultList;
       data.imageAngles =
-          new List<int>.generate(images.length, (int index) => 0);
+          new List<double>.generate(images.length, (int index) => 0);
       _error = error;
     });
   }
@@ -168,7 +166,7 @@ class _MyAppState extends State<MyApp> {
 
       var angle = data.imageAngles[image.index];
       ImageEditorOption option = ImageEditorOption();
-      option.addOption(RotateOption(angle));
+      option.addOption(RotateOption(angle.toInt()));
       option.outputFormat = OutputFormat.png(100);
       // TODO: Use the loaded image getByteData method with edit Image from image_editor to optimize performance.
       final result = await ImageEditor.editFileImage(
