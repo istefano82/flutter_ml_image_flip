@@ -6,7 +6,7 @@ import 'package:flutter/widgets.dart';
 
 import 'package:photo_view/photo_view.dart';
 
-import 'main.dart';
+import 'home_page.dart';
 
 class ImageDetailPage extends StatefulWidget {
   final Data data;
