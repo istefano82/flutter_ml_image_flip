@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:fluter_image_flip/authentication.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 
 class LoginSignUpPage extends StatefulWidget {
   LoginSignUpPage({this.auth, this.onSignedIn});
