@@ -10,6 +10,7 @@ import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_editor/image_editor.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:fluter_image_flip/image_detail_page.dart';
+import 'package:fluter_image_flip/login_signup_page.dart';
 import 'authentication.dart';
 
 class HomePage extends StatefulWidget {
@@ -84,11 +85,11 @@ class _HomePageState extends State<HomePage> {
   Future rotatePressedImage(
       BuildContext context, Asset asset, int angleIndex) async {
     // String path = await asset.filePath;
-    // developer.log(path, name: 'my.app.main');
+    // developer.log(path, name: 'my.app.home_page');
     setState(() {
       data.imageAngles[angleIndex] = (data.imageAngles[angleIndex] + 90) % 360;
       developer.log(data.imageAngles[angleIndex].toString(),
-          name: 'my.app.main');
+          name: 'my.app.home_page');
     });
   }
 
@@ -198,12 +199,12 @@ class _HomePageState extends State<HomePage> {
         imageMean: 127.5,
         imageStd: 127.5,
       );
-      developer.log(recognitions[0]['label'].toString(), name: 'my.app.main');
+      developer.log(recognitions[0]['label'].toString(), name: 'my.app.home_page');
       var predLabel = recognitions[0]['label'];
       // TODO: Make sure images are only rotated if confidence is above 90% for example
       var newAngle = _labelAngleMap[predLabel];
       data.imageAngles[image.index] += newAngle;
-      developer.log(newAngle.toString(), name: 'my.app.main');
+      developer.log(newAngle.toString(), name: 'my.app.home_page');
       // TODO: Figure out why am I calling set state with empty argument
       setState(() {});
     }
@@ -228,7 +229,9 @@ class _HomePageState extends State<HomePage> {
     try {
       await widget.auth.signOut();
       widget.onSignedOut();
+      showFloatingFlushbar(context, 'Successfully logged out!');
     } catch (e) {
+      showSimpleErrorFlushbar(context, e.toString());
       print(e);
     }
   }

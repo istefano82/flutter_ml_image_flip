@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:fluter_image_flip/authentication.dart';
 
+import "package:flushbar/flushbar.dart";
+import "package:flushbar/flushbar_helper.dart";
+
+import 'dart:developer' as developer;
+
 class LoginSignUpPage extends StatefulWidget {
   LoginSignUpPage({this.auth, this.onSignedIn});
 
@@ -39,17 +44,27 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
     });
     if (_validateAndSave()) {
       String userId = "";
+      String flushBarMessage = "";
+      String logMessage = "";
       try {
         if (_isLoginForm) {
           userId = await widget.auth.signIn(_email, _password);
-          print('Signed in: $userId');
+          flushBarMessage = 'Successfully signed in!';
+          logMessage = 'Signed in: $userId';
+          showFloatingFlushbar(context, flushBarMessage);
+          developer.log(logMessage,
+              name: 'my.app.login_signup_page.validateAndSubmit');
         } else {
           userId = await widget.auth.signUp(_email, _password);
           //widget.auth.sendEmailVerification();
           //_showVerifyEmailSentDialog();
-          // TODO: Show notification of succesfull registration
-          toggleFormMode();
-          print('Signed up user: $userId');
+
+          toggleFormMode(); // Login automatically after registration
+          flushBarMessage = 'Successfully signed up!';
+          logMessage = 'Signed up user: $userId';
+          showFloatingFlushbar(context, flushBarMessage);
+          developer.log(logMessage,
+              name: 'my.app.login_signup_page.validateAndSubmit');
         }
         setState(() {
           _isLoading = false;
@@ -59,7 +74,10 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
           widget.onSignedIn();
         }
       } catch (e) {
-        print('Error: $e');
+        flushBarMessage = ('Error: $e');
+        showSimpleErrorFlushbar(context, flushBarMessage);
+        developer.log(flushBarMessage,
+            name: 'my.app.login_signup_page.validateAndSubmit');
         setState(() {
           _isLoading = false;
           _errorMessage = e.message;
@@ -248,4 +266,38 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
           ),
         ));
   }
+}
+
+void showSimpleErrorFlushbar(BuildContext context, String msg) {
+  FlushbarHelper.createError(title: 'Error!', message: msg)..show(context);
+}
+
+void showFloatingFlushbar(BuildContext context, String msg) {
+  Flushbar(
+    margin: EdgeInsets.all(10),
+    borderRadius: 8,
+    duration: Duration(seconds: 3),
+    icon: Icon(
+      Icons.info_outline,
+      size: 28,
+      color: Colors.blue.shade300,
+    ),
+    backgroundGradient: LinearGradient(
+      colors: [Colors.blue.shade600, Colors.blueAccent.shade700],
+      stops: [0.6, 1],
+    ),
+    boxShadows: [
+      BoxShadow(
+        color: Colors.black45,
+        offset: Offset(3, 3),
+        blurRadius: 3,
+      ),
+    ],
+    // All of the previous Flushbars could be dismissed by swiping down
+    // now we want to swipe to the sides
+    dismissDirection: FlushbarDismissDirection.HORIZONTAL,
+    // The default curve is Curves.easeOut
+    forwardAnimationCurve: Curves.fastLinearToSlowEaseIn,
+    message: msg,
+  )..show(context);
 }
