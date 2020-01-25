@@ -10,12 +10,12 @@ import 'home_page.dart';
 
 class ImageDetailPage extends StatefulWidget {
   final Data data;
-  final String imgPath;
+  final List<int> imageData;
   final int imgAngleIndex;
-  ImageDetailPage(this.imgPath, this.imgAngleIndex, {this.data});
+  ImageDetailPage(this.imageData, this.imgAngleIndex, {this.data});
   @override
   _ImageDetailPageState createState() =>
-      _ImageDetailPageState(this.imgPath, this.imgAngleIndex, data: data);
+      _ImageDetailPageState(this.imageData, this.imgAngleIndex, data: data);
 }
 
 class _ImageDetailPageState extends State<ImageDetailPage> {
@@ -23,10 +23,10 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
   double rotateCopy;
   double originalAngleRdians;
   final Data data;
-  final String imgPath;
   final int imgAngleIndex;
+  final List<int> imageData;
 
-  _ImageDetailPageState(this.imgPath, this.imgAngleIndex, {this.data});
+  _ImageDetailPageState(this.imageData, this.imgAngleIndex, {this.data});
 
   @override
   void initState() {
@@ -68,8 +68,7 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
               // even while it's being zoomed in
               child: ClipRect(
                 child: PhotoView(
-                  //TODO: Figure out how to convert multi image picker image bytestream to AssetImage
-                  imageProvider: AssetImage(imgPath),
+                  imageProvider:  new MemoryImage(imageData),
                   // Contained = the smallest possible size to fit one dimension of the screen
                   controller: controller,
                   minScale: PhotoViewComputedScale.contained * 1.0,

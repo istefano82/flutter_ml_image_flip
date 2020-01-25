@@ -94,11 +94,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   _secondPage(BuildContext context, Asset asset, int index) async {
-    final imgPath = await asset.filePath;
+    ByteData byteData = await asset.getByteData();
+    final List<int> imageData = byteData.buffer.asUint8List();
     final dataFromSecondPage = await Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => ImageDetailPage(imgPath, index, data: data)),
+          builder: (context) => ImageDetailPage(imageData, index, data: data)),
     ) as Data;
     setState(() {
       data.imageAngles = dataFromSecondPage.imageAngles;
@@ -186,6 +187,12 @@ class _HomePageState extends State<HomePage> {
         imageEditorOption: option,
       );
       await ImageGallerySaver.saveImage(result);
+      showFloatingFlushbar(context, 'Images saved!');
+      setState(() {
+        images = List<Asset>();
+        data.imageAngles =
+            new List<double>.generate(images.length, (int index) => 0);
+      });
     }
   }
 
@@ -199,16 +206,15 @@ class _HomePageState extends State<HomePage> {
         imageMean: 127.5,
         imageStd: 127.5,
       );
-      developer.log(recognitions[0]['label'].toString(), name: 'my.app.home_page');
+      developer.log(recognitions[0]['label'].toString(),
+          name: 'my.app.home_page');
       var predLabel = recognitions[0]['label'];
       // TODO: Make sure images are only rotated if confidence is above 90% for example
       var newAngle = _labelAngleMap[predLabel];
       data.imageAngles[image.index] += newAngle;
       developer.log(newAngle.toString(), name: 'my.app.home_page');
-      // TODO: Figure out why am I calling set state with empty argument
       setState(() {});
     }
-    await Tflite.close();
   }
 
   Future loadModel() async {
@@ -223,6 +229,12 @@ class _HomePageState extends State<HomePage> {
     } on PlatformException {
       print('Failed to load model.');
     }
+  }
+
+  @override
+  void dispose() async {
+    await Tflite.close();
+    super.dispose();
   }
 
   signOut() async {
