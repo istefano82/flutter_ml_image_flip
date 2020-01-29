@@ -32,7 +32,8 @@ class Data {
 
 class _HomePageState extends State<HomePage> {
   final data = Data(imageAngles: []);
-  List<Asset> images = List<Asset>();
+  List<Asset> imageAssets = List<Asset>();
+  List<List<int>> images;
   String _error = 'No Error Dectected';
   Map _labelAngleMap = {
     'left': 90,
@@ -112,8 +113,8 @@ class _HomePageState extends State<HomePage> {
     return GridView.count(
       crossAxisCount: 3,
       mainAxisSpacing: 3,
-      children: List.generate(images.length, (index) {
-        Asset asset = images[index];
+      children: List.generate(imageAssets.length, (index) {
+        Asset asset = imageAssets[index];
         return Builder(
             builder: (context) => GestureDetector(
                   child: GridTile(
@@ -143,7 +144,7 @@ class _HomePageState extends State<HomePage> {
       resultList = await MultiImagePicker.pickImages(
         maxImages: 15,
         enableCamera: true,
-        selectedAssets: images,
+        selectedAssets: imageAssets,
         cupertinoOptions: CupertinoOptions(takePhotoIcon: "chat"),
         materialOptions: MaterialOptions(
           actionBarColor: "#abcdef",
@@ -168,40 +169,44 @@ class _HomePageState extends State<HomePage> {
     if (!mounted) return;
 
     setState(() {
-      images = resultList;
+      imageAssets = resultList;
       data.imageAngles =
-          new List<double>.generate(images.length, (int index) => 0);
+          new List<double>.generate(imageAssets.length, (int index) => 0);
       _error = error;
     });
   }
 
   Future<void> rotateSaveImages() async {
-    for (var image in enumerate(images)) {
-      String originalImagePath = await image.value.filePath;
+    List<int> imageListByteData;
+    for (var image in enumerate(imageAssets)) {
+      try {
+        imageListByteData = images[image.index];
+      } on NoSuchMethodError {
+        imageListByteData = await imgByteToList(image);
+      }
 
       var angle = data.imageAngles[image.index];
       ImageEditorOption option = ImageEditorOption();
       option.addOption(RotateOption(angle.toInt()));
       option.outputFormat = OutputFormat.png(100);
-      // TODO: Use the loaded image getByteData method with edit Image from image_editor to optimize performance.
-      final result = await ImageEditor.editFileImage(
-        file: File(originalImagePath),
+      final result = await ImageEditor.editImage(
+        image: imageListByteData,
         imageEditorOption: option,
       );
       await ImageGallerySaver.saveImage(result);
       showFloatingFlushbar(context, 'Images saved!');
     }
     setState(() {
-      images = List<Asset>();
+      imageAssets = List<Asset>();
       data.imageAngles =
-          new List<double>.generate(images.length, (int index) => 0);
+          new List<double>.generate(imageAssets.length, (int index) => 0);
     });
   }
 
   Future flipImages() async {
-    for (var image in enumerate(images)) {
-      ByteData byteData = await image.value.getByteData();
-      List<int> imageData = byteData.buffer.asUint8List();
+    for (var image in enumerate(imageAssets)) {
+      List<int> imageData = await imgByteToList(image);
+      images.add(imageData);
       img.Image reconstructedImage = img.decodeImage(imageData);
       img.Image imageThumbnail =
           img.copyResize(reconstructedImage, height: 224, width: 224);
@@ -224,6 +229,12 @@ class _HomePageState extends State<HomePage> {
         continue;
       }
     }
+  }
+
+  Future<List<int>> imgByteToList(IndexedValue<Asset> image) async {
+    ByteData byteData = await image.value.getByteData();
+    List<int> imageData = byteData.buffer.asUint8List();
+    return imageData;
   }
 
   Uint8List imageToByteListFloat32(
