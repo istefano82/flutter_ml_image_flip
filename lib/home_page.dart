@@ -1,11 +1,13 @@
 import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 import 'package:quiver/iterables.dart';
 import 'package:tflite/tflite.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:developer' as developer;
 import 'package:flutter/services.dart';
+import 'package:image/image.dart' as img;
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_editor/image_editor.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
@@ -198,23 +200,55 @@ class _HomePageState extends State<HomePage> {
 
   Future flipImages() async {
     for (var image in enumerate(images)) {
-      String imgPath = await image.value.filePath;
-      var recognitions = await Tflite.runModelOnImage(
-        path: imgPath,
-        numResults: 1,
-        threshold: 0.05,
-        imageMean: 127.5,
-        imageStd: 127.5,
-      );
-      developer.log(recognitions[0]['label'].toString(),
+      // String imgPath = await image.value.filePath;
+      // var recognitions = await Tflite.runModelOnImage(
+      //   path: imgPath,
+      //   numResults: 1,
+      //   threshold: 0.05,
+      //   imageMean: 127.5,
+      //   imageStd: 127.5,
+      // );
+      ByteData byteData = await image.value.getByteData();
+      List<int> imageData = byteData.buffer.asUint8List();
+      img.Image reconstructedImage = img.decodeImage(imageData);
+      img.Image imageThumbnail =
+          img.copyResize(reconstructedImage, height: 224, width: 224);
+
+      var recognitions = await Tflite.runModelOnBinary(
+          binary: imageToByteListFloat32(
+              imageThumbnail, 224, 127.5, 127.5), // required
+          numResults: 1, 
+          threshold: 0.9, // use predictions with > 90 percent confidences
+          asynch: true 
+          );
+      developer.log("Predicted data is $recognitions",
           name: 'my.app.home_page');
-      var predLabel = recognitions[0]['label'];
-      // TODO: Make sure images are only rotated if confidence is above 90% for example
-      var newAngle = _labelAngleMap[predLabel];
-      data.imageAngles[image.index] += newAngle;
-      developer.log(newAngle.toString(), name: 'my.app.home_page');
-      setState(() {});
+      try {
+        var predLabel = recognitions[0]['label'];
+        var newAngle = _labelAngleMap[predLabel];
+        data.imageAngles[image.index] += newAngle;
+        developer.log(newAngle.toString(), name: 'my.app.home_page');
+        setState(() {});
+      } on RangeError {
+        continue;
+      }
     }
+  }
+
+  Uint8List imageToByteListFloat32(
+      img.Image image, int inputSize, double mean, double std) {
+    var convertedBytes = Float32List(1 * inputSize * inputSize * 3);
+    var buffer = Float32List.view(convertedBytes.buffer);
+    int pixelIndex = 0;
+    for (var i = 0; i < inputSize; i++) {
+      for (var j = 0; j < inputSize; j++) {
+        var pixel = image.getPixel(j, i);
+        buffer[pixelIndex++] = (img.getRed(pixel) - mean) / std;
+        buffer[pixelIndex++] = (img.getGreen(pixel) - mean) / std;
+        buffer[pixelIndex++] = (img.getBlue(pixel) - mean) / std;
+      }
+    }
+    return convertedBytes.buffer.asUint8List();
   }
 
   Future loadModel() async {
