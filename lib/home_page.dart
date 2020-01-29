@@ -87,8 +87,6 @@ class _HomePageState extends State<HomePage> {
 
   Future rotatePressedImage(
       BuildContext context, Asset asset, int angleIndex) async {
-    // String path = await asset.filePath;
-    // developer.log(path, name: 'my.app.home_page');
     setState(() {
       data.imageAngles[angleIndex] = (data.imageAngles[angleIndex] + 90) % 360;
       developer.log(data.imageAngles[angleIndex].toString(),
@@ -154,11 +152,6 @@ class _HomePageState extends State<HomePage> {
           selectCircleStrokeColor: "#000000",
         ),
       );
-
-      for (var r in resultList) {
-        var t = await r.filePath;
-        print(t);
-      }
     } on Exception catch (e) {
       error = e.toString();
     }
