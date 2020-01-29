@@ -190,24 +190,16 @@ class _HomePageState extends State<HomePage> {
       );
       await ImageGallerySaver.saveImage(result);
       showFloatingFlushbar(context, 'Images saved!');
-      setState(() {
-        images = List<Asset>();
-        data.imageAngles =
-            new List<double>.generate(images.length, (int index) => 0);
-      });
     }
+    setState(() {
+      images = List<Asset>();
+      data.imageAngles =
+          new List<double>.generate(images.length, (int index) => 0);
+    });
   }
 
   Future flipImages() async {
     for (var image in enumerate(images)) {
-      // String imgPath = await image.value.filePath;
-      // var recognitions = await Tflite.runModelOnImage(
-      //   path: imgPath,
-      //   numResults: 1,
-      //   threshold: 0.05,
-      //   imageMean: 127.5,
-      //   imageStd: 127.5,
-      // );
       ByteData byteData = await image.value.getByteData();
       List<int> imageData = byteData.buffer.asUint8List();
       img.Image reconstructedImage = img.decodeImage(imageData);
@@ -217,10 +209,9 @@ class _HomePageState extends State<HomePage> {
       var recognitions = await Tflite.runModelOnBinary(
           binary: imageToByteListFloat32(
               imageThumbnail, 224, 127.5, 127.5), // required
-          numResults: 1, 
+          numResults: 1,
           threshold: 0.9, // use predictions with > 90 percent confidences
-          asynch: true 
-          );
+          asynch: true);
       developer.log("Predicted data is $recognitions",
           name: 'my.app.home_page');
       try {
