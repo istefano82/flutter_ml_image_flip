@@ -33,7 +33,7 @@ class Data {
 class _HomePageState extends State<HomePage> {
   final data = Data(imageAngles: []);
   List<Asset> imageAssets = List<Asset>();
-  List<List<int>> images;
+  List<List<int>> images = [];
   String _error = 'No Error Dectected';
   Map _labelAngleMap = {
     'left': 90,
@@ -174,7 +174,7 @@ class _HomePageState extends State<HomePage> {
     for (var image in enumerate(imageAssets)) {
       try {
         imageListByteData = images[image.index];
-      } on NoSuchMethodError {
+      } on RangeError {
         imageListByteData = await imgByteToList(image);
       }
 
