@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluter_image_flip/authentication.dart';
 
@@ -54,11 +55,19 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
           showFloatingFlushbar(context, flushBarMessage);
           developer.log(logMessage,
               name: 'my.app.login_signup_page.validateAndSubmit');
+          var userData = {
+            'paid': false
+          };
+          await Firestore.instance.collection('premiumUsers').document(userId).setData(userData);
+
         } else {
           userId = await widget.auth.signUp(_email, _password);
           //widget.auth.sendEmailVerification();
           //_showVerifyEmailSentDialog();
-
+          var userData = {
+            'paid': false
+          };
+          await Firestore.instance.collection('premiumUsers').document(userId).setData(userData);
           toggleFormMode(); // Login automatically after registration
           flushBarMessage = 'Successfully signed up!';
           logMessage = 'Signed up user: $userId';
@@ -74,13 +83,14 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
           widget.onSignedIn();
         }
       } catch (e) {
-        flushBarMessage = ('Error: $e');
+        var errorMessage = e.message;
+        flushBarMessage = ('Error: $errorMessage');
         showSimpleErrorFlushbar(context, flushBarMessage);
         developer.log(flushBarMessage,
             name: 'my.app.login_signup_page.validateAndSubmit');
         setState(() {
           _isLoading = false;
-          _errorMessage = e.message;
+          _errorMessage = errorMessage;
           _formKey.currentState.reset();
         });
       }
