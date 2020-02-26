@@ -35,7 +35,7 @@ class _HomePageState extends State<HomePage> {
   List<Asset> imageAssets = List<Asset>();
   List<List<int>> images = [];
   String _error = 'No Error Dectected';
-  bool _isGoPremiumVisible = true;
+  bool _isPaidUser = false;
   Map _labelAngleMap = {
     'left': 90,
     'right': 270,
@@ -47,50 +47,65 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     loadModel().then((val) {});
+    // TODO handle error when user is not yet added to Firebase
+    Firestore.instance
+        .collection('premiumUsers')
+        .document(this.widget.userId)
+        .get()
+        .then((DocumentSnapshot ds) {
+      // use ds as a snapshot
+        developer.log(ds.data['paid'].toString(),
+          name: 'my.app.home_page');
+      _isPaidUser = ds.data['paid'];
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      home: new Scaffold(
-        appBar: new AppBar(
-          title: const Text('Plugin example app'),
-          actions: <Widget>[
-            new FlatButton(
-                child: new Text('Logout',
-                    style: new TextStyle(fontSize: 17.0, color: Colors.white)),
-                onPressed: signOut),
-            Visibility(
-                visible: _isGoPremiumVisible,
-                child: new FlatButton(
-                    child: new Text('Go Premium',
-                        style:
-                            new TextStyle(fontSize: 17.0, color: Colors.white)),
-                    onPressed: goPremium)),
-          ],
-        ),
-        body: Column(
-          children: <Widget>[
-            Center(child: Text('Error: $_error')),
-            RaisedButton(
-              child: Text("Pick images"),
-              onPressed: loadAssets,
-            ),
-            RaisedButton(
-              child: Text("Flip Images"),
-              onPressed: flipImages,
-            ),
-            Expanded(
-              child: buildGridView(context),
-            ),
-            RaisedButton(
-              child: Text("Save Images"),
-              onPressed: rotateSaveImages,
-            ),
-          ],
-        ),
+        home: new Scaffold(
+      appBar: new AppBar(
+        title: const Text('Plugin example app'),
+        actions: <Widget>[
+          new FlatButton(
+              child: new Text('Logout',
+                  style: new TextStyle(fontSize: 17.0, color: Colors.white)),
+              onPressed: signOut),
+        ],
       ),
-    );
+      body: Column(
+        children: <Widget>[
+          Center(child: Text('Error: $_error')),
+          Expanded(
+            child: buildGridView(context),
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.image),
+        onPressed: loadAssets,
+        tooltip: "Upload images.",
+      ),
+      persistentFooterButtons: <Widget>[
+        FlatButton(
+          child: Text("Flip Images"),
+          onPressed: flipImages,
+        ),
+        FlatButton(
+          child: Text("Save Images"),
+          onPressed: rotateSaveImages,
+        ),
+        Visibility(
+            visible: !_isPaidUser,
+            child: new FlatButton(
+                child: new Text('Go Premium',
+                    style: new TextStyle(
+                      fontSize: 17.0,
+                      color: Colors.blueAccent,
+                    )),
+                onPressed: goPremium)),
+      ],
+    ));
   }
 
   Future rotatePressedImage(
@@ -287,13 +302,14 @@ class _HomePageState extends State<HomePage> {
 
   goPremium() async {
     var userData = {'paid': true};
+    // TODO: Use atomic transaction to update existing user or create new paid user
     await Firestore.instance
         .collection('premiumUsers')
         .document(this.widget.userId)
         .setData(userData);
 
     setState(() {
-      _isGoPremiumVisible = false;
+      _isPaidUser = true;
     });
   }
 }
