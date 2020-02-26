@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:developer' as developer;
 import 'package:flutter/services.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_editor/image_editor.dart';
@@ -34,6 +35,7 @@ class _HomePageState extends State<HomePage> {
   List<Asset> imageAssets = List<Asset>();
   List<List<int>> images = [];
   String _error = 'No Error Dectected';
+  bool _isGoPremiumVisible = true;
   Map _labelAngleMap = {
     'left': 90,
     'right': 270,
@@ -57,7 +59,14 @@ class _HomePageState extends State<HomePage> {
             new FlatButton(
                 child: new Text('Logout',
                     style: new TextStyle(fontSize: 17.0, color: Colors.white)),
-                onPressed: signOut)
+                onPressed: signOut),
+            Visibility(
+                visible: _isGoPremiumVisible,
+                child: new FlatButton(
+                    child: new Text('Go Premium',
+                        style:
+                            new TextStyle(fontSize: 17.0, color: Colors.white)),
+                    onPressed: goPremium)),
           ],
         ),
         body: Column(
@@ -274,5 +283,17 @@ class _HomePageState extends State<HomePage> {
       showSimpleErrorFlushbar(context, e.toString());
       print(e);
     }
+  }
+
+  goPremium() async {
+    var userData = {'paid': true};
+    await Firestore.instance
+        .collection('premiumUsers')
+        .document(this.widget.userId)
+        .setData(userData);
+
+    setState(() {
+      _isGoPremiumVisible = false;
+    });
   }
 }
