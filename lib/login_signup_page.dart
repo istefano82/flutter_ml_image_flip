@@ -55,19 +55,10 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
           showFloatingFlushbar(context, flushBarMessage);
           developer.log(logMessage,
               name: 'my.app.login_signup_page.validateAndSubmit');
-          var userData = {
-            'paid': false
-          };
-          await Firestore.instance.collection('premiumUsers').document(userId).setData(userData);
-
         } else {
           userId = await widget.auth.signUp(_email, _password);
           //widget.auth.sendEmailVerification();
           //_showVerifyEmailSentDialog();
-          var userData = {
-            'paid': false
-          };
-          await Firestore.instance.collection('premiumUsers').document(userId).setData(userData);
           toggleFormMode(); // Login automatically after registration
           flushBarMessage = 'Successfully signed up!';
           logMessage = 'Signed up user: $userId';
