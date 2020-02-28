@@ -96,11 +96,11 @@ class _HomePageState extends State<HomePage> {
       ),
       persistentFooterButtons: <Widget>[
         FlatButton(
-          child: Text("Flip Images"),
+          child:  Text("Flip Images"),
           onPressed: flipImages,
         ),
         FlatButton(
-          child: Text("Save Images"),
+          child: Icon(Icons.save_alt), //Text("Save Images"),
           onPressed: rotateSaveImages,
         ),
         Visibility(
