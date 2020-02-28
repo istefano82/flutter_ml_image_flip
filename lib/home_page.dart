@@ -94,14 +94,16 @@ class _HomePageState extends State<HomePage> {
         onPressed: loadAssets,
         tooltip: "Upload images.",
       ),
-      persistentFooterButtons: <Widget>[
+      persistentFooterButtons: 
+      <Widget>[
         FlatButton(
           child:  Text("Flip Images"),
           onPressed: flipImages,
         ),
-        FlatButton(
+        FloatingActionButton(
           child: Icon(Icons.save_alt), //Text("Save Images"),
           onPressed: rotateSaveImages,
+          tooltip: "Save images.",
         ),
         Visibility(
             visible: !_isPaidUser,
