@@ -47,16 +47,24 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     loadModel().then((val) {});
-    // TODO handle error when user is not yet added to Firebase
-    Firestore.instance
+    checkIsPremium();
+  }
+
+  Future checkIsPremium() async {
+    await Firestore.instance
         .collection('premiumUsers')
         .document(this.widget.userId)
         .get()
         .then((DocumentSnapshot ds) {
       // use ds as a snapshot
-        developer.log(ds.data['paid'].toString(),
-          name: 'my.app.home_page');
-      _isPaidUser = ds.data['paid'];
+      try {
+        setState(() {
+          _isPaidUser = ds.data['paid'];
+        });
+      } catch (e) {
+        developer.log(e.toString(), name: 'my.app.home_page.checkIsPremium');
+        _isPaidUser = false;
+      }
     });
   }
 
@@ -277,9 +285,9 @@ class _HomePageState extends State<HomePage> {
         model: "assets/imageflip.tflite",
         labels: "assets/imageflip.txt",
       );
-      print('Loaded model $res');
+      developer.log('Loaded model $res', name: 'my.app.home_page');
     } on PlatformException {
-      print('Failed to load model.');
+      developer.log('Failed to load model.', name: 'my.app.home_page');
     }
   }
 
@@ -302,7 +310,6 @@ class _HomePageState extends State<HomePage> {
 
   goPremium() async {
     var userData = {'paid': true};
-    // TODO: Use atomic transaction to update existing user or create new paid user
     await Firestore.instance
         .collection('premiumUsers')
         .document(this.widget.userId)
