@@ -16,7 +16,7 @@
          FlutterApplication and put your custom class here. -->
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="fluter_image_flip"
+        android:label="Auto Image Flip"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
