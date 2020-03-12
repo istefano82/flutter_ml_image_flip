@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'dart:typed_data';
+import 'package:fluter_image_flip/purchase_premium.dart';
 import 'package:quiver/iterables.dart';
 import 'package:tflite/tflite.dart';
 import 'package:flutter/material.dart';
@@ -93,17 +94,16 @@ class _HomePageState extends State<HomePage> {
         child: Icon(Icons.image),
         onPressed: loadAssets,
         tooltip: "Upload images.",
+        heroTag: 'upldImages',
       ),
-      persistentFooterButtons: 
-      <Widget>[
+      persistentFooterButtons: <Widget>[
         FlatButton(
-          child:  Text("Flip Images"),
+          child: Text("Flip Images"),
           onPressed: flipImages,
         ),
-        FloatingActionButton(
+        FlatButton(
           child: Icon(Icons.save_alt), //Text("Save Images"),
           onPressed: rotateSaveImages,
-          tooltip: "Save images.",
         ),
         Visibility(
             visible: !_isPaidUser,
@@ -311,14 +311,22 @@ class _HomePageState extends State<HomePage> {
   }
 
   goPremium() async {
-    var userData = {'paid': true};
+
+
+    final isPremium = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MarketScreen()),
+    ) as bool;
+    developer.log('Is premium $isPremium.', name: 'my.app.home_page.goPremium');
+
+    var userData = {'paid': false};
     await Firestore.instance
         .collection('premiumUsers')
         .document(this.widget.userId)
         .setData(userData);
 
     setState(() {
-      _isPaidUser = true;
+      _isPaidUser = isPremium;
     });
   }
 }
