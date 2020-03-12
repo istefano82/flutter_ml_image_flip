@@ -319,7 +319,7 @@ class _HomePageState extends State<HomePage> {
     ) as bool;
     developer.log('Is premium $isPremium.', name: 'my.app.home_page.goPremium');
 
-    var userData = {'paid': false};
+    var userData = {'paid': isPremium};
     await Firestore.instance
         .collection('premiumUsers')
         .document(this.widget.userId)
