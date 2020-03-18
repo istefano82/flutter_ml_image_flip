@@ -306,7 +306,6 @@ class _HomePageState extends State<HomePage> {
       showFloatingFlushbar(context, 'Successfully logged out!');
     } catch (e) {
       showSimpleErrorFlushbar(context, e.toString());
-      print(e);
     }
   }
 
