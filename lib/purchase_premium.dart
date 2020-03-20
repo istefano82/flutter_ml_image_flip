@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'dart:developer' as developer;
 
-final String testID = 'premium';
+final String iapPremiumProductId = 'premium';
 
 class MarketScreen extends StatefulWidget {
   @override
@@ -11,7 +12,8 @@ class MarketScreen extends StatefulWidget {
 
 class _MarketScreenState extends State<MarketScreen> {
   InAppPurchaseConnection iap = InAppPurchaseConnection.instance;
-  bool available = true;
+  bool available = false;
+  bool paid = false;
 
   List<ProductDetails> products = [];
   List<PurchaseDetails> purchases = [];
@@ -37,12 +39,10 @@ class _MarketScreenState extends State<MarketScreen> {
     if (available) {
       await getProducts();
       await getPastPurchases();
-      print(products);
 
       verifyPurchase();
 
       subscription = iap.purchaseUpdatedStream.listen((data) => setState(() {
-            print('NEW PURCHASE');
             purchases.addAll(data);
             verifyPurchase();
           }));
@@ -50,21 +50,13 @@ class _MarketScreenState extends State<MarketScreen> {
   }
 
   Future<void> getProducts() async {
-    Set<String> ids = Set.from([testID]);
+    Set<String> ids = Set.from([iapPremiumProductId]);
     ProductDetailsResponse response = await iap.queryProductDetails(ids);
     if (response.notFoundIDs.isNotEmpty) {
       var res = response.notFoundIDs;
-      print("Response is empty $res");
-    // Handle the error.
-}
-    // const Set<String> _kIds = {'premium', ''};
-    // final ProductDetailsResponse response =
-    //     await InAppPurchaseConnection.instance.queryProductDetails(_kIds);
-    // if (!response.notFoundIDs.isEmpty) {
-    //   var res = response.notFoundIDs
-    //   print('Following products not found $res');
-    //   // Handle the error.
-    // }
+      developer.log("Google IAP query products eesponse is empty $res",
+          name: 'my.app.purchase_premium.getProducts');
+    }
     setState(() {
       products = response.productDetails;
     });
@@ -78,67 +70,63 @@ class _MarketScreenState extends State<MarketScreen> {
   }
 
   PurchaseDetails hasPurchased(String pruductID) {
-    return purchases.firstWhere((purchase) => purchase.productID == testID,
-        orElse: () => null);
+    return purchases.firstWhere((purchase) => purchase.productID == pruductID ,orElse: () => null);
   }
 
   void verifyPurchase() {
-    PurchaseDetails purchase = hasPurchased(testID);
+    PurchaseDetails purchase = hasPurchased(iapPremiumProductId);
 
     if (purchase != null && purchase.status == PurchaseStatus.purchased) {
-      credits = 10;
+      paid = true;
     }
   }
 
   void buyProduct(ProductDetails prod) {
     final PurchaseParam purchaseParam = PurchaseParam(productDetails: prod);
-    iap.buyConsumable(purchaseParam: purchaseParam, autoConsume: false);
+    iap.buyNonConsumable(purchaseParam: purchaseParam);
+    verifyPurchase();
   }
 
-  void spendCredits(PurchaseDetails purchase) async {
-    setState(() {
-      credits--;
-    });
-
-    if (credits == 0) {
-      var res = await iap.consumePurchase(purchase);
-      await getPastPurchases();
-    }
+  void consumePremium(ProductDetails prod) async {
+    PurchaseDetails purchase = hasPurchased(prod.id);
+    var res = await iap.consumePurchase(purchase);
+    await getPastPurchases();
+    developer.log("Consuming product result is $res",
+        name: 'my.app.purchase_premium.consumePremium');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(available ? 'Yes' : 'No'),
+        title: Text(
+            available ? 'Purchase Premium' : 'Premium service Not Available'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            for (var prod in products)
-              if (hasPurchased(prod.id) != null) ...[
-                Text('$credits', style: TextStyle(fontSize: 60)),
-                FlatButton(
-                  child: Text('Consume'),
-                  color: Colors.green,
-                  onPressed: () => spendCredits(hasPurchased(prod.id)),
-                ),
-              ] else ...[
-                Text(prod.title, style: Theme.of(context).textTheme.headline),
-                Text(prod.description),
-                Text(prod.price,
-                    style: TextStyle(color: Colors.greenAccent, fontSize: 60)),
-                FlatButton(
-                  child: Text('Buy it'),
-                  color: Colors.green,
-                  onPressed: () => buyProduct(prod),
-                ),
-              ],
+            for (var prod in products) ...[
+              Text(prod.title, style: Theme.of(context).textTheme.headline),
+              Text(prod.description),
+              Text(prod.price,
+                  style: TextStyle(color: Colors.greenAccent, fontSize: 60)),
+              FlatButton(
+                child: Text('Buy Premium'),
+                color: Colors.green,
+                onPressed: () => buyProduct(prod),
+              ),
+            ],
             RaisedButton(
                 child: Text("Back"),
                 onPressed: () {
                   returnPaid(context); // data back to the first screen},
+                }),
+            RaisedButton(
+                child: Text("Consume premium"),
+                onPressed: () {
+                  consumePremium(
+                      products[0]);
                 }),
           ],
         ),
@@ -147,10 +135,6 @@ class _MarketScreenState extends State<MarketScreen> {
   }
 
   void returnPaid(BuildContext context) {
-    // TODO - link the paid boolean to actual payment function
-    bool paid = false;
     Navigator.pop(context, paid);
   }
-  // Private methods go here
-
 }

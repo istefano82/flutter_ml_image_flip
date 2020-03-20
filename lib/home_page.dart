@@ -310,22 +310,20 @@ class _HomePageState extends State<HomePage> {
   }
 
   goPremium() async {
-
-
-    final isPremium = await Navigator.push(
+    final paid = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => MarketScreen()),
     ) as bool;
-    developer.log('Is premium $isPremium.', name: 'my.app.home_page.goPremium');
+    developer.log('Is premium $paid.', name: 'my.app.home_page.goPremium');
 
-    var userData = {'paid': isPremium};
+    var userData = {'paid': paid? paid: false};
     await Firestore.instance
         .collection('premiumUsers')
         .document(this.widget.userId)
         .setData(userData);
 
     setState(() {
-      _isPaidUser = isPremium;
+      _isPaidUser = paid;
     });
   }
 }
