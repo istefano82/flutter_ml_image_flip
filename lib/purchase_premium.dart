@@ -87,12 +87,14 @@ class _MarketScreenState extends State<MarketScreen> {
     verifyPurchase();
   }
 
+  //@ TODO remove or comment consume premium for production
   void consumePremium(ProductDetails prod) async {
     PurchaseDetails purchase = hasPurchased(prod.id);
     var res = await iap.consumePurchase(purchase);
     await getPastPurchases();
     developer.log("Consuming product result is $res",
         name: 'my.app.purchase_premium.consumePremium');
+    paid = false;
   }
 
   @override
