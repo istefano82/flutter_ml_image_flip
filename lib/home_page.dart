@@ -36,7 +36,7 @@ class _HomePageState extends State<HomePage> {
   List<Asset> imageAssets = List<Asset>();
   List<List<int>> images = [];
   String _error = 'No Error Dectected';
-  bool _isPaidUser = false;
+  bool _isPremium = false;
   Map _labelAngleMap = {
     'left': 90,
     'right': 270,
@@ -60,11 +60,11 @@ class _HomePageState extends State<HomePage> {
       // use ds as a snapshot
       try {
         setState(() {
-          _isPaidUser = ds.data['paid'];
+          _isPremium = ds.data['paid'];
         });
       } catch (e) {
         developer.log(e.toString(), name: 'my.app.home_page.checkIsPremium');
-        _isPaidUser = false;
+        _isPremium = false;
       }
     });
   }
@@ -74,7 +74,6 @@ class _HomePageState extends State<HomePage> {
     return new MaterialApp(
         home: new Scaffold(
       appBar: new AppBar(
-        title: const Text('Plugin example app'),
         actions: <Widget>[
           new FlatButton(
               child: new Text('Logout',
@@ -97,16 +96,23 @@ class _HomePageState extends State<HomePage> {
         heroTag: 'upldImages',
       ),
       persistentFooterButtons: <Widget>[
+        IconButton(
+          icon: Icon(Icons.help),
+          onPressed: null,
+          // TODO figure out how to style the icon in Blue
+          color: Colors.blue,
+        ),
         FlatButton(
           child: Text("Flip Images"),
           onPressed: flipImages,
         ),
-        FlatButton(
-          child: Icon(Icons.save_alt), //Text("Save Images"),
+        IconButton(
+          icon: Icon(Icons.save_alt), //Text("Save Images"),
           onPressed: rotateSaveImages,
+          color: Colors.blue,
         ),
         Visibility(
-            visible: !_isPaidUser,
+            visible: !_isPremium,
             child: new FlatButton(
                 child: new Text('Go Premium',
                     style: new TextStyle(
@@ -173,7 +179,7 @@ class _HomePageState extends State<HomePage> {
     String error = 'No Error Dectected';
     try {
       resultList = await MultiImagePicker.pickImages(
-        maxImages: 15,
+        maxImages: _isPremium ? 15 : 5,
         enableCamera: true,
         selectedAssets: imageAssets,
         cupertinoOptions: CupertinoOptions(takePhotoIcon: "chat"),
@@ -230,6 +236,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future flipImages() async {
+    // TODO Add overlay with remaining progress indicator
     for (var image in enumerate(imageAssets)) {
       List<int> imageData = await imgByteToList(image);
       images.add(imageData);
@@ -316,14 +323,14 @@ class _HomePageState extends State<HomePage> {
     ) as bool;
     developer.log('Is premium $paid.', name: 'my.app.home_page.goPremium');
 
-    var userData = {'paid': paid? paid: false};
+    var userData = {'paid': paid ? paid : false};
     await Firestore.instance
         .collection('premiumUsers')
         .document(this.widget.userId)
         .setData(userData);
 
     setState(() {
-      _isPaidUser = paid;
+      _isPremium = paid;
     });
   }
 }

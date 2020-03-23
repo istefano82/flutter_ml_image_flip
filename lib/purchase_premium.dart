@@ -70,7 +70,8 @@ class _MarketScreenState extends State<MarketScreen> {
   }
 
   PurchaseDetails hasPurchased(String pruductID) {
-    return purchases.firstWhere((purchase) => purchase.productID == pruductID ,orElse: () => null);
+    return purchases.firstWhere((purchase) => purchase.productID == pruductID,
+        orElse: () => null);
   }
 
   void verifyPurchase() {
@@ -101,6 +102,7 @@ class _MarketScreenState extends State<MarketScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(
             available ? 'Purchase Premium' : 'Premium service Not Available'),
       ),
@@ -127,8 +129,7 @@ class _MarketScreenState extends State<MarketScreen> {
             RaisedButton(
                 child: Text("Consume premium"),
                 onPressed: () {
-                  consumePremium(
-                      products[0]);
+                  consumePremium(products[0]);
                 }),
           ],
         ),
