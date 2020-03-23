@@ -227,8 +227,9 @@ class _HomePageState extends State<HomePage> {
         imageEditorOption: option,
       );
       await ImageGallerySaver.saveImage(result);
-      showFloatingFlushbar(context, 'Images saved!');
     }
+    showFloatingFlushbar(context, 'Images saved!');
+
     setState(() {
       imageAssets = List<Asset>();
       data.imageAngles =
@@ -336,10 +337,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   void showHelp() {
-          String msg = '1: Tap "Flip Images" to use AI to autocorrect your image angles.\n\n' + 
-      '2: Tap on an image to rotate it by 90 degree\n\n' + 
-      '3: Hold your finger on an image to use rotation gesture for precise image degree correction\n\n' + 
-      '4: Click "Save" icon to save the images to the phone gallery under "Auto Image Flip" directory';
+    String msg =
+        '1: Tap "Flip Images" to use AI to autocorrect your image angles.\n\n' +
+            '2: Tap on an image to rotate it by 90 degree\n\n' +
+            '3: Hold your finger on an image to use rotation gesture for precise image degree correction\n\n' +
+            '4: Click "Save" icon to save the images to the phone gallery under "Auto Image Flip" directory';
     FlushbarHelper.createInformation(
         title: 'App Help!', message: msg, duration: null)
       ..show(context);
