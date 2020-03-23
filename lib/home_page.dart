@@ -214,7 +214,7 @@ class _HomePageState extends State<HomePage> {
       try {
         imageListByteData = images[image.index];
       } on RangeError {
-        imageListByteData = await imgByteToList(image);
+        continue;
       }
 
       var angle = data.imageAngles[image.index];
