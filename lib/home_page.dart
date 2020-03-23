@@ -76,6 +76,7 @@ class _HomePageState extends State<HomePage> {
         home: new Scaffold(
       appBar: new AppBar(
         actions: <Widget>[
+          IconButton(icon: Icon(Icons.help), onPressed: showHelp, color: Colors.white),
           new FlatButton(
               child: new Text('Logout',
                   style: new TextStyle(fontSize: 17.0, color: Colors.white)),
@@ -97,12 +98,6 @@ class _HomePageState extends State<HomePage> {
         heroTag: 'upldImages',
       ),
       persistentFooterButtons: <Widget>[
-        IconButton(
-          icon: Icon(Icons.help),
-          onPressed: showHelp,
-          // TODO figure out how to style the icon in Blue
-          color: Colors.blue,
-        ),
         FlatButton(
           child: Text("Flip Images"),
           onPressed: flipImages,
