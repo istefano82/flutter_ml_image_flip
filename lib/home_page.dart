@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'dart:typed_data';
+import 'package:flushbar/flushbar_helper.dart';
 import 'package:fluter_image_flip/purchase_premium.dart';
 import 'package:quiver/iterables.dart';
 import 'package:tflite/tflite.dart';
@@ -98,7 +99,7 @@ class _HomePageState extends State<HomePage> {
       persistentFooterButtons: <Widget>[
         IconButton(
           icon: Icon(Icons.help),
-          onPressed: null,
+          onPressed: showHelp,
           // TODO figure out how to style the icon in Blue
           color: Colors.blue,
         ),
@@ -332,5 +333,15 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _isPremium = paid;
     });
+  }
+
+  void showHelp() {
+          String msg = '1: Tap "Flip Images" to use AI to autocorrect your image angles.\n\n' + 
+      '2: Tap on an image to rotate it by 90 degree\n\n' + 
+      '3: Hold your finger on an image to use rotation gesture for precise image degree correction\n\n' + 
+      '4: Click "Save" icon to save the images to the phone gallery under "Auto Image Flip" directory';
+    FlushbarHelper.createInformation(
+        title: 'App Help!', message: msg, duration: null)
+      ..show(context);
   }
 }
