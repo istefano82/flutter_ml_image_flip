@@ -41,6 +41,7 @@ dependencies:
   cloud_firestore: ^0.12.9+5
   firebase_auth: ^0.15.0
   in_app_purchase: 0.3.1+2
+  ads: ^1.7.0
 
 
 
