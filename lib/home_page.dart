@@ -16,6 +16,7 @@ import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:fluter_image_flip/image_detail_page.dart';
 import 'package:fluter_image_flip/login_signup_page.dart';
 import 'authentication.dart';
+import 'AppAds.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.auth, this.userId, this.onSignedOut});
@@ -47,9 +48,11 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    AppAds.init();
     super.initState();
     loadModel().then((val) {});
     checkIsPremium();
+    AppAds.showBanner();
   }
 
   Future checkIsPremium() async {
@@ -300,6 +303,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() async {
     await Tflite.close();
+    AppAds.dispose();
     super.dispose();
   }
 
