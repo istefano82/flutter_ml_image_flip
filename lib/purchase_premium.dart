@@ -100,40 +100,45 @@ class _MarketScreenState extends State<MarketScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(
-            available ? 'Purchase Premium' : 'Premium service Not Available'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            for (var prod in products) ...[
-              Text(prod.title, style: Theme.of(context).textTheme.headline),
-              Text(prod.description),
-              Text(prod.price,
-                  style: TextStyle(color: Colors.greenAccent, fontSize: 60)),
-              FlatButton(
-                child: Text('Buy Premium'),
-                color: Colors.green,
-                onPressed: () => buyProduct(prod),
-              ),
+    return new WillPopScope(
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: Text(
+              available ? 'Purchase Premium' : 'Premium service Not Available'),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              for (var prod in products) ...[
+                Text(prod.title, style: Theme.of(context).textTheme.headline),
+                Text(prod.description),
+                Text(prod.price,
+                    style: TextStyle(color: Colors.greenAccent, fontSize: 60)),
+                FlatButton(
+                  child: Text('Buy Premium'),
+                  color: Colors.green,
+                  onPressed: () => buyProduct(prod),
+                ),
+              ],
+              RaisedButton(
+                  child: Text("Back"),
+                  onPressed: () {
+                    returnPaid(context); // data back to the first screen},
+                  }),
+              RaisedButton(
+                  child: Text("Consume premium"),
+                  onPressed: () {
+                    consumePremium(products[0]);
+                  }),
             ],
-            RaisedButton(
-                child: Text("Back"),
-                onPressed: () {
-                  returnPaid(context); // data back to the first screen},
-                }),
-            RaisedButton(
-                child: Text("Consume premium"),
-                onPressed: () {
-                  consumePremium(products[0]);
-                }),
-          ],
+          ),
         ),
       ),
+      onWillPop: () {
+        returnPaid(context);
+      },
     );
   }
 
