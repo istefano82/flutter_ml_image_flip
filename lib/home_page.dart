@@ -52,7 +52,10 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     loadModel().then((val) {});
     checkIsPremium();
-    AppAds.showBanner();
+    // TOOD figure out how to place close button inside banner.
+    if (!_isPremium) {
+      AppAds.showBanner();
+    }
   }
 
   Future checkIsPremium() async {
@@ -79,7 +82,8 @@ class _HomePageState extends State<HomePage> {
         home: new Scaffold(
       appBar: new AppBar(
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.help), onPressed: showHelp, color: Colors.white),
+          IconButton(
+              icon: Icon(Icons.help), onPressed: showHelp, color: Colors.white),
           new FlatButton(
               child: new Text('Logout',
                   style: new TextStyle(fontSize: 17.0, color: Colors.white)),
@@ -135,6 +139,10 @@ class _HomePageState extends State<HomePage> {
   _secondPage(BuildContext context, Asset asset, int index) async {
     ByteData byteData = await asset.getByteData();
     final List<int> imageData = byteData.buffer.asUint8List();
+    if (!_isPremium) {
+      AppAds.showFullScreenAd();
+    }
+
     final dataFromSecondPage = await Navigator.push(
       context,
       MaterialPageRoute(
