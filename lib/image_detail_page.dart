@@ -52,7 +52,7 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return new WillPopScope(child: Scaffold(
       appBar: AppBar(
         title: Text('Clipped Photo View'),
         automaticallyImplyLeading: false,
@@ -91,10 +91,14 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
           ],
         ),
       ),
+    ), 
+    onWillPop: () {
+      _updateImageAngles(context);
+    },
     );
   }
 
-  void _updateImageAngles(BuildContext context) {
+  Future<void> _updateImageAngles(BuildContext context) {
     developer.log(
         "Applying new imageAngle to imageAngle array with value: $rotateCopy",
         name: 'my.app._ImageDetailPageState');
