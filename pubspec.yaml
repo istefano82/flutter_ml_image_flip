@@ -42,6 +42,9 @@ dependencies:
   firebase_auth: ^0.15.0
   in_app_purchase: 0.3.1+2
   ads: ^1.7.0
+  flutter_awesome_alert_box: ^1.0.1
+  progress_dialog: ^1.2.0
+
 
 
 

@@ -29,7 +29,13 @@ class _MarketScreenState extends State<MarketScreen> {
 
   @override
   void dispose() {
-    subscription.cancel();
+    try {
+            subscription.cancel();
+
+    } on NoSuchMethodError {
+      developer.log('IAP StreamSubscription not available.', 
+      name: 'my.app.purchase_premium.dispose');
+    }
     super.dispose();
   }
 
@@ -138,6 +144,7 @@ class _MarketScreenState extends State<MarketScreen> {
       ),
       onWillPop: () {
         returnPaid(context);
+        return null;
       },
     );
   }

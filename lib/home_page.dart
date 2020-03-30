@@ -2,6 +2,8 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'package:flushbar/flushbar_helper.dart';
 import 'package:fluter_image_flip/purchase_premium.dart';
+import 'package:flutter_awesome_alert_box/flutter_awesome_alert_box.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:quiver/iterables.dart';
 import 'package:tflite/tflite.dart';
 import 'package:flutter/material.dart';
@@ -52,12 +54,9 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     loadModel().then((val) {});
     checkIsPremium();
-    // TOOD figure out how to place close button inside banner.
-    if (!_isPremium) {
-      AppAds.showBanner();
-    }
   }
 
+  // TODO: Add firestore subscriptoin to listen for DB update
   Future checkIsPremium() async {
     await Firestore.instance
         .collection('premiumUsers')
@@ -72,6 +71,11 @@ class _HomePageState extends State<HomePage> {
       } catch (e) {
         developer.log(e.toString(), name: 'my.app.home_page.checkIsPremium');
         _isPremium = false;
+      }
+      if (!_isPremium) {
+        developer.log("Is premium is $_isPremium.");
+        AppAds.showBanner();
+        InfoBgAlertBox(context: context,title: 'Go Premium', infoMessage: 'Manage up to 15 images at a time and remove ADS!');
       }
     });
   }
@@ -105,15 +109,6 @@ class _HomePageState extends State<HomePage> {
         heroTag: 'upldImages',
       ),
       persistentFooterButtons: <Widget>[
-        FlatButton(
-          child: Text("Flip Images"),
-          onPressed: flipImages,
-        ),
-        IconButton(
-          icon: Icon(Icons.save_alt), //Text("Save Images"),
-          onPressed: rotateSaveImages,
-          color: Colors.blue,
-        ),
         Visibility(
             visible: !_isPremium,
             child: new FlatButton(
@@ -123,6 +118,19 @@ class _HomePageState extends State<HomePage> {
                       color: Colors.blueAccent,
                     )),
                 onPressed: goPremium)),
+        FlatButton(
+          child: new Text('Flip Images',
+              style: new TextStyle(
+                fontSize: 17.0,
+                color: Colors.blueAccent,
+              )),
+          onPressed: flipImages,
+        ),
+        IconButton(
+          icon: Icon(Icons.save_alt), //Text("Save Images"),
+          onPressed: rotateSaveImages,
+          color: Colors.blue,
+        ),
       ],
     ));
   }
@@ -244,9 +252,30 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future flipImages() async {
-    // TODO Add overlay with remaining progress indicator
+    var pr = new ProgressDialog(context,
+        type: ProgressDialogType.Download,
+        isDismissible: false,
+        showLogs: false);
+        pr.style(
+          progress: 1.0,
+          message: "Flipping your images...",
+          progressWidget: Container(
+              padding: EdgeInsets.all(8.0), child: CircularProgressIndicator()),
+          maxProgress: imageAssets.length.toDouble(),
+          progressTextStyle: TextStyle(
+              color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.w400),
+          messageTextStyle: TextStyle(
+              color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.w600),
+        );
+    pr.show();
     for (var image in enumerate(imageAssets)) {
       List<int> imageData = await imgByteToList(image);
+      var progressVal = image.index + 1;
+            print('Image index is $progressVal');
+
+      pr.update(
+        progress: progressVal.toDouble(),
+      );
       images.add(imageData);
       img.Image reconstructedImage = img.decodeImage(imageData);
       img.Image imageThumbnail =
@@ -256,7 +285,7 @@ class _HomePageState extends State<HomePage> {
           binary: imageToByteListFloat32(
               imageThumbnail, 224, 127.5, 127.5), // required
           numResults: 1,
-          threshold: 0.9, // use predictions with > 90 percent confidences
+          threshold: 0.7, // use predictions with > 90 percent confidences
           asynch: true);
       developer.log("Predicted data is $recognitions",
           name: 'my.app.home_page');
@@ -270,6 +299,7 @@ class _HomePageState extends State<HomePage> {
         continue;
       }
     }
+    pr.hide();
   }
 
   Future<List<int>> imgByteToList(IndexedValue<Asset> image) async {
@@ -344,11 +374,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   void showHelp() {
-    String msg =
-        '1: Tap "Flip Images" to use AI to autocorrect your image angles.\n\n' +
-            '2: Tap on an image to rotate it by 90 degree\n\n' +
-            '3: Hold your finger on an image to use rotation gesture for precise image degree correction\n\n' +
-            '4: Click "Save" icon to save the images to the phone gallery under "Auto Image Flip" directory';
+    String msg = '1: Purchase Premium to be able to manage up to 15 images at a time and remove Advertising!\n\n' +
+        '2: Tap "Flip Images" to use AI to autocorrect your image angles.\n\n' +
+        '3: Tap on an image to rotate it by 90 degree\n\n' +
+        '4: Hold your finger on an image to use rotation gesture for precise image degree correction\n\n' +
+        '5: When finished click "Save" icon to save the images to the phone gallery under "Auto Image Flip" directory\n\n';
     FlushbarHelper.createInformation(
         title: 'App Help!', message: msg, duration: null)
       ..show(context);

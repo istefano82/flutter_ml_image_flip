@@ -94,15 +94,17 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
     ), 
     onWillPop: () {
       _updateImageAngles(context);
+      return null;
     },
     );
   }
 
-  Future<void> _updateImageAngles(BuildContext context) {
+  void _updateImageAngles(BuildContext context) {
     developer.log(
         "Applying new imageAngle to imageAngle array with value: $rotateCopy",
         name: 'my.app._ImageDetailPageState');
     data.imageAngles[this.imgAngleIndex] = rotateCopy;
     Navigator.pop(context, data);
+    return null;
   }
 }
