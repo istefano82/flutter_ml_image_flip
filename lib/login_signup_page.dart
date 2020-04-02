@@ -169,8 +169,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
               _showSecondaryButton(),
               _showErrorMessage(),
               _showGoogleSignIn(),
-
-              // _showFacebookSignIn()
+              _showFacebookSignIn()
             ],
           ),
         ));
@@ -274,7 +273,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
           var flushBarMessage = ('Error: $errorMessage');
           showSimpleErrorFlushbar(context, flushBarMessage);
           developer.log(flushBarMessage,
-              name: 'my.app.login_signup_page.validateAndSubmit');
+              name: 'my.app.login_signup_page._showGoogleSignIn');
         }
       },
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
@@ -288,9 +287,59 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
           children: <Widget>[
             Image(image: AssetImage("assets/google_logo.png"), height: 25.0),
             Padding(
-              padding: const EdgeInsets.only(left: 10),
+              padding: const EdgeInsets.only(left: 5),
               child: Text(
                 'Sign in with Google',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.grey,
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    ); 
+  }
+
+  Widget _showFacebookSignIn() {
+    return OutlineButton(
+      splashColor: Colors.grey,
+      onPressed: () async {
+        try {
+          setState(() {
+            _isLoading = true;
+          });
+          await widget.auth.signInWithFacebook();
+          widget.onSignedIn();
+          setState(() {
+            _isLoading = false;
+          });
+        } catch (e) {
+          setState(() {
+            _isLoading = false;
+          });
+          var errorMessage = e.message;
+          var flushBarMessage = ('Error: $errorMessage');
+          showSimpleErrorFlushbar(context, flushBarMessage);
+          developer.log(flushBarMessage,
+              name: 'my.app.login_signup_page._showFacebookSignIn');
+        }
+      },
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+      highlightElevation: 0,
+      borderSide: BorderSide(color: Colors.grey),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(15, 5, 0, 5),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Image(image: AssetImage("assets/facebook_logo.png"), height: 35.0),
+            Padding(
+              padding: const EdgeInsets.only(left: 5),
+              child: Text(
+                'Sign in with Facebook',
                 style: TextStyle(
                   fontSize: 20,
                   color: Colors.grey,

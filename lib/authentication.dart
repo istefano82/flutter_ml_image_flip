@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-// import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 
 abstract class BaseAuth {
   Future<String> signIn(String email, String password);
@@ -18,13 +18,13 @@ abstract class BaseAuth {
 
   Future<String> signInWithGoogle();
 
-  // Future<String> signInWithFacebook();
+  Future<String> signInWithFacebook();
 }
 
 class Auth implements BaseAuth {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
-  // final _facebookLogin = FacebookLogin();
+  final _facebookLogin = FacebookLogin();
 
   Future<String> signIn(String email, String password) async {
     AuthResult result = await _firebaseAuth.signInWithEmailAndPassword(
@@ -59,35 +59,47 @@ class Auth implements BaseAuth {
     return user.isEmailVerified;
   }
 
-  // @override
-  // Future<String> signInWithFacebook() async {
-  //   // TODO check if loginis with email
-  //   final result = await _facebookLogin.logIn(['email']);
-  //   final AuthCredential credential = FacebookAuthProvider.getCredential(
-  //     accessToken: result.accessToken.token,
-  //   );
-  //   return (await _firebaseAuth.signInWithCredential(credential)).user.uid;
-  // }
+  @override
+  Future<String> signInWithFacebook() async {
+    // TODO check if loginis with email
+    final result = await _facebookLogin.logIn(['email']);
+    final AuthCredential credential = FacebookAuthProvider.getCredential(
+      accessToken: result.accessToken.token,
+    );
+    final AuthResult authResult =
+        await _firebaseAuth.signInWithCredential(credential);
+    final FirebaseUser user = authResult.user;
+
+    assert(!user.isAnonymous);
+    assert(await user.getIdToken() != null);
+
+    final FirebaseUser currentUser = await _firebaseAuth.currentUser();
+    assert(user.uid == currentUser.uid);
+
+    return user.uid;
+  }
 
   Future<String> signInWithGoogle() async {
-  final GoogleSignInAccount googleSignInAccount = await _googleSignIn.signIn();
-  final GoogleSignInAuthentication googleSignInAuthentication =
-      await googleSignInAccount.authentication;
+    final GoogleSignInAccount googleSignInAccount =
+        await _googleSignIn.signIn();
+    final GoogleSignInAuthentication googleSignInAuthentication =
+        await googleSignInAccount.authentication;
 
-  final AuthCredential credential = GoogleAuthProvider.getCredential(
-    accessToken: googleSignInAuthentication.accessToken,
-    idToken: googleSignInAuthentication.idToken,
-  );
+    final AuthCredential credential = GoogleAuthProvider.getCredential(
+      accessToken: googleSignInAuthentication.accessToken,
+      idToken: googleSignInAuthentication.idToken,
+    );
 
-  final AuthResult authResult = await _firebaseAuth.signInWithCredential(credential);
-  final FirebaseUser user = authResult.user;
+    final AuthResult authResult =
+        await _firebaseAuth.signInWithCredential(credential);
+    final FirebaseUser user = authResult.user;
 
-  assert(!user.isAnonymous);
-  assert(await user.getIdToken() != null);
+    assert(!user.isAnonymous);
+    assert(await user.getIdToken() != null);
 
-  final FirebaseUser currentUser = await _firebaseAuth.currentUser();
-  assert(user.uid == currentUser.uid);
+    final FirebaseUser currentUser = await _firebaseAuth.currentUser();
+    assert(user.uid == currentUser.uid);
 
-  return user.uid;
-}
+    return user.uid;
+  }
 }

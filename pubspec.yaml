@@ -45,7 +45,7 @@ dependencies:
   flutter_awesome_alert_box: ^1.0.1
   progress_dialog: ^1.2.0
   google_sign_in: ^4.3.0
-  # flutter_facebook_login: ^3.0.0
+  flutter_facebook_login: ^3.0.0
 
 
 
@@ -67,6 +67,7 @@ flutter:
    - assets/imageflip.tflite
    - assets/imageflip.txt
    - assets/google_logo.png
+   - assets/facebook_logo.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
