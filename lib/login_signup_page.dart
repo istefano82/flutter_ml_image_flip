@@ -168,6 +168,9 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
               _showPrimaryButton(),
               _showSecondaryButton(),
               _showErrorMessage(),
+              _showGoogleSignIn(),
+
+              // _showFacebookSignIn()
             ],
           ),
         ));
@@ -206,7 +209,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
 
   Widget _showEmailInput() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0.0, 100.0, 0.0, 0.0),
+      padding: const EdgeInsets.fromLTRB(0.0, 50.0, 0.0, 0.0),
       child: new TextFormField(
         maxLines: 1,
         keyboardType: TextInputType.emailAddress,
@@ -248,6 +251,56 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
             _isLoginForm ? 'Create an account' : 'Have an account? Sign in',
             style: new TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300)),
         onPressed: toggleFormMode);
+  }
+
+  Widget _showGoogleSignIn() {
+    return OutlineButton(
+      splashColor: Colors.grey,
+      onPressed: () async {
+        try {
+          setState(() {
+            _isLoading = true;
+          });
+          await widget.auth.signInWithGoogle();
+          widget.onSignedIn();
+          setState(() {
+            _isLoading = false;
+          });
+        } catch (e) {
+          setState(() {
+            _isLoading = false;
+          });
+          var errorMessage = e.message;
+          var flushBarMessage = ('Error: $errorMessage');
+          showSimpleErrorFlushbar(context, flushBarMessage);
+          developer.log(flushBarMessage,
+              name: 'my.app.login_signup_page.validateAndSubmit');
+        }
+      },
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+      highlightElevation: 0,
+      borderSide: BorderSide(color: Colors.grey),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Image(image: AssetImage("assets/google_logo.png"), height: 25.0),
+            Padding(
+              padding: const EdgeInsets.only(left: 10),
+              child: Text(
+                'Sign in with Google',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.grey,
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    ); 
   }
 
   Widget _showPrimaryButton() {

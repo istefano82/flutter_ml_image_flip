@@ -74,7 +74,7 @@ class _HomePageState extends State<HomePage> {
       }
       if (!_isPremium) {
         developer.log("Is premium is $_isPremium.");
-        AppAds.showBanner();
+        // AppAds.showBanner();
         InfoBgAlertBox(context: context,title: 'Go Premium', infoMessage: 'Manage up to 15 images at a time and remove ADS!');
       }
     });
@@ -340,9 +340,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() async {
+    super.dispose();
     await Tflite.close();
     AppAds.dispose();
-    super.dispose();
   }
 
   signOut() async {
