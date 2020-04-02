@@ -19,7 +19,7 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="Auto Image Flip"
         android:icon="@mipmap/ic_launcher"
-        android:debuggable="true">
+        android:debuggable="false">
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3940256099942544~3347511713" />
