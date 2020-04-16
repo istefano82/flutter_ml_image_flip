@@ -39,7 +39,6 @@ class _HomePageState extends State<HomePage> {
   final data = Data(imageAngles: []);
   List<Asset> imageAssets = List<Asset>();
   List<List<int>> images = [];
-  String _error = 'No Error Dectected';
   bool _isPremium = false;
   Map _labelAngleMap = {
     'left': 90,
@@ -99,7 +98,6 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Column(
         children: <Widget>[
-          Center(child: Text('Error: $_error')),
           Expanded(
             child: buildGridView(context),
           ),
@@ -193,7 +191,6 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> loadAssets() async {
     List<Asset> resultList = List<Asset>();
-    String error = 'No Error Dectected';
     try {
       resultList = await MultiImagePicker.pickImages(
         maxImages: _isPremium ? 15 : 5,
@@ -209,7 +206,7 @@ class _HomePageState extends State<HomePage> {
         ),
       );
     } on Exception catch (e) {
-      error = e.toString();
+      developer.log(e.toString());
     }
 
     // If the widget was removed from the tree while the asynchronous platform
@@ -221,7 +218,6 @@ class _HomePageState extends State<HomePage> {
       imageAssets = resultList;
       data.imageAngles =
           new List<double>.generate(imageAssets.length, (int index) => 0);
-      _error = error;
     });
   }
 
