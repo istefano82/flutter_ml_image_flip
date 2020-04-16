@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:developer' as developer;
 
+import 'package:flushbar/flushbar_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -52,50 +53,52 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return new WillPopScope(child: Scaffold(
-      appBar: AppBar(
-        title: Text('Clipped Photo View'),
-        automaticallyImplyLeading: false,
-      ),
-      body: Container(
-        padding: EdgeInsets.all(12.0),
-        alignment: Alignment.center,
-        child: Column(
-          children: <Widget>[
-            AspectRatio(
-              aspectRatio: 16 / 9,
-              // Puts a "mask" on the child, so that it will keep its original, unzoomed size
-              // even while it's being zoomed in
-              child: ClipRect(
-                child: PhotoView(
-                  imageProvider:  new MemoryImage(imageData),
-                  // Contained = the smallest possible size to fit one dimension of the screen
-                  controller: controller,
-                  minScale: PhotoViewComputedScale.contained * 1.0,
-                  maxScale: PhotoViewComputedScale.contained * 1.0,
-                  enableRotation: true,
+    return new WillPopScope(
+      child: Scaffold(
+        body: Container(
+          padding: EdgeInsets.all(12.0),
+          alignment: Alignment.center,
+          child: Column(
+            children: <Widget>[
+              AspectRatio(
+                aspectRatio: 16 / 9,
+                // Puts a "mask" on the child, so that it will keep its original, unzoomed size
+                // even while it's being zoomed in
+                child: ClipRect(
+                  child: PhotoView(
+                    imageProvider: new MemoryImage(imageData),
+                    // Contained = the smallest possible size to fit one dimension of the screen
+                    controller: controller,
+                    minScale: PhotoViewComputedScale.contained * 1.0,
+                    maxScale: PhotoViewComputedScale.contained * 1.0,
+                    enableRotation: true,
 
-                  loadingChild: Center(
-                    child: CircularProgressIndicator(),
+                    loadingChild: Center(
+                      child: CircularProgressIndicator(),
+                    ),
                   ),
                 ),
               ),
-            ),
-            RaisedButton(
-                child: Text("Back"),
-                onPressed: () {
-                  _updateImageAngles(
-                      context); // data back to the first screen},
-                }),
-            Text("Rotation applied: $rotateCopy"),
-          ],
+              RaisedButton(
+                  child: Text("Back"),
+                  onPressed: () {
+                    _updateImageAngles(
+                        context); // data back to the first screen},
+                  }),
+            ],
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.help),
+          onPressed: showHelp,
+          tooltip: "Show Help",
+          heroTag: 'showHelp',
         ),
       ),
-    ), 
-    onWillPop: () {
-      _updateImageAngles(context);
-      return null;
-    },
+      onWillPop: () {
+        _updateImageAngles(context);
+        return null;
+      },
     );
   }
 
@@ -106,5 +109,14 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
     data.imageAngles[this.imgAngleIndex] = rotateCopy;
     Navigator.pop(context, data);
     return null;
+  }
+
+  void showHelp() {
+    String msg =
+        '1: Use rotation gesture for precise image degree correction\n\n' +
+            '2: When finished click "Back" button to back.\n\n';
+    FlushbarHelper.createInformation(
+        title: 'Help!', message: msg, duration: null)
+      ..show(context);
   }
 }

@@ -6,7 +6,7 @@ import 'package:ads/ads.dart';
 
 class AppAds {
   static Ads _ads;
-
+//TODO use own production app and ads IDs
   static final String _appId = Platform.isAndroid
       ? 'ca-app-pub-3940256099942544~3347511713'
       : 'ca-app-pub-3940256099942544~1458002511';
@@ -77,7 +77,6 @@ class AppAds {
           anchorType: anchorType);
 
   static void hideFullScreenAd() => _ads?.closeFullScreenAd();
-
 
   /// Call this static function in your State object's initState() function.
   static void init() => _ads ??= Ads(

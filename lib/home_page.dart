@@ -73,6 +73,7 @@ class _HomePageState extends State<HomePage> {
       }
       if (!_isPremium) {
         developer.log("Is premium is $_isPremium.");
+        //TODO enable banner ADD for production
         // AppAds.showBanner();
         InfoBgAlertBox(
             context: context,
@@ -378,7 +379,7 @@ class _HomePageState extends State<HomePage> {
         '4: Hold your finger on an image to use rotation gesture for precise image degree correction\n\n' +
         '5: When finished click "Save" icon to save the images to the phone gallery under "Auto Image Flip" directory\n\n';
     FlushbarHelper.createInformation(
-        title: 'App Help!', message: msg, duration: null)
+        title: '  Help!', message: msg, duration: null)
       ..show(context);
   }
 }
