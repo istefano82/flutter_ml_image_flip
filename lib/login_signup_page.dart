@@ -110,15 +110,12 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-        appBar: new AppBar(
-          title: new Text('Flutter login demo'),
-        ),
         body: Stack(
-          children: <Widget>[
-            _showBody(),
-            _showCircularProgress(),
-          ],
-        ));
+      children: <Widget>[
+        _showBody(),
+        _showCircularProgress(),
+      ],
+    ));
   }
 
   Widget _showCircularProgress() {
@@ -200,7 +197,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         child: CircleAvatar(
           backgroundColor: Colors.transparent,
           radius: 48.0,
-          child: Image.asset('assets/flutter-icon.png'),
+          child: Image.asset('assets/image_flip_logo-512X512-no-bkg.png'),
         ),
       ),
     );
@@ -299,7 +296,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
           ],
         ),
       ),
-    ); 
+    );
   }
 
   Widget _showFacebookSignIn() {
@@ -349,7 +346,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
           ],
         ),
       ),
-    ); 
+    );
   }
 
   Widget _showPrimaryButton() {

@@ -75,7 +75,10 @@ class _HomePageState extends State<HomePage> {
       if (!_isPremium) {
         developer.log("Is premium is $_isPremium.");
         // AppAds.showBanner();
-        InfoBgAlertBox(context: context,title: 'Go Premium', infoMessage: 'Manage up to 15 images at a time and remove ADS!');
+        InfoBgAlertBox(
+            context: context,
+            title: 'Go Premium',
+            infoMessage: 'Manage up to 15 images at a time and remove ADS!');
       }
     });
   }
@@ -172,7 +175,6 @@ class _HomePageState extends State<HomePage> {
                   child: GridTile(
                       child: Transform.rotate(
                           angle: data.imageAngles[index] * pi / 180,
-                          // TODO Use RotationTransition animation for eye candy
                           child: AssetThumb(
                             asset: asset,
                             width: 300,
@@ -256,22 +258,22 @@ class _HomePageState extends State<HomePage> {
         type: ProgressDialogType.Download,
         isDismissible: false,
         showLogs: false);
-        pr.style(
-          progress: 1.0,
-          message: "Flipping your images...",
-          progressWidget: Container(
-              padding: EdgeInsets.all(8.0), child: CircularProgressIndicator()),
-          maxProgress: imageAssets.length.toDouble(),
-          progressTextStyle: TextStyle(
-              color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.w400),
-          messageTextStyle: TextStyle(
-              color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.w600),
-        );
+    pr.style(
+      progress: 1.0,
+      message: "Flipping your images...",
+      progressWidget: Container(
+          padding: EdgeInsets.all(8.0), child: CircularProgressIndicator()),
+      maxProgress: imageAssets.length.toDouble(),
+      progressTextStyle: TextStyle(
+          color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.w400),
+      messageTextStyle: TextStyle(
+          color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.w600),
+    );
     pr.show();
     for (var image in enumerate(imageAssets)) {
       List<int> imageData = await imgByteToList(image);
       var progressVal = image.index + 1;
-            print('Image index is $progressVal');
+      print('Image index is $progressVal');
 
       pr.update(
         progress: progressVal.toDouble(),
