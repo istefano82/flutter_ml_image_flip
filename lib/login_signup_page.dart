@@ -160,13 +160,13 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
             shrinkWrap: true,
             children: <Widget>[
               _showLogo(),
+              _showGoogleSignIn(),
+              _showFacebookSignIn(),
               _showEmailInput(),
               _showPasswordInput(),
               _showPrimaryButton(),
               _showSecondaryButton(),
               _showErrorMessage(),
-              _showGoogleSignIn(),
-              _showFacebookSignIn()
             ],
           ),
         ));
@@ -193,10 +193,10 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
     return new Hero(
       tag: 'hero',
       child: Padding(
-        padding: EdgeInsets.fromLTRB(0.0, 70.0, 0.0, 0.0),
+        padding: EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 20.0),
         child: CircleAvatar(
           backgroundColor: Colors.transparent,
-          radius: 48.0,
+          radius: 68.0,
           child: Image.asset('assets/image_flip_logo-512X512-no-bkg.png'),
         ),
       ),
@@ -205,7 +205,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
 
   Widget _showEmailInput() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0.0, 50.0, 0.0, 0.0),
+      padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
       child: new TextFormField(
         maxLines: 1,
         keyboardType: TextInputType.emailAddress,

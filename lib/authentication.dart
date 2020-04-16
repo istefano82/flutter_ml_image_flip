@@ -61,7 +61,6 @@ class Auth implements BaseAuth {
 
   @override
   Future<String> signInWithFacebook() async {
-    // TODO check if loginis with email
     final result = await _facebookLogin.logIn(['email']);
     final AuthCredential credential = FacebookAuthProvider.getCredential(
       accessToken: result.accessToken.token,
