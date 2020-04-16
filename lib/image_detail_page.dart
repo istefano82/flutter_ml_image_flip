@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:photo_view/photo_view.dart';
+import 'package:quiver/strings.dart';
 
 import 'home_page.dart';
 
@@ -55,6 +56,15 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
   Widget build(BuildContext context) {
     return new WillPopScope(
       child: Scaffold(
+        appBar: new AppBar(automaticallyImplyLeading: false, actions: <Widget>[
+          Container(
+            margin: const EdgeInsets.fromLTRB(0, 0, 130, 0),
+            child: IconButton(
+                icon: Icon(Icons.help),
+                onPressed: showHelp,
+                color: Colors.white),
+          )
+        ]),
         body: Container(
           padding: EdgeInsets.all(12.0),
           alignment: Alignment.center,
@@ -87,12 +97,6 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
                   }),
             ],
           ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.help),
-          onPressed: showHelp,
-          tooltip: "Show Help",
-          heroTag: 'showHelp',
         ),
       ),
       onWillPop: () {
