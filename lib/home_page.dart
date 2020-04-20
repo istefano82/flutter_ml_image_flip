@@ -37,6 +37,9 @@ class Data {
 
 class _HomePageState extends State<HomePage> {
   final data = Data(imageAngles: []);
+  // Switch Firestore to production
+  final db = Firestore.instance;
+  StreamSubscription sub;
   List<Asset> imageAssets = List<Asset>();
   List<List<int>> images = [];
   bool _isPremium = false;
@@ -50,36 +53,32 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     AppAds.init();
-    super.initState();
     loadModel().then((val) {});
-    checkIsPremium();
-  }
-
-  // TODO: Add firestore subscriptoin to listen for DB update
-  Future checkIsPremium() async {
-    await Firestore.instance
+    sub = db
         .collection('premiumUsers')
         .document(this.widget.userId)
-        .get()
-        .then((DocumentSnapshot ds) {
-      // use ds as a snapshot
-      try {
-        setState(() {
-          _isPremium = ds.data['paid'];
-        });
-      } catch (e) {
-        developer.log(e.toString(), name: 'my.app.home_page.checkIsPremium');
-        _isPremium = false;
-      }
-      if (!_isPremium) {
-        developer.log("Is premium is $_isPremium.");
-        AppAds.showBanner();
-        InfoBgAlertBox(
-            context: context,
-            title: 'Go Premium',
-            infoMessage: 'Manage up to 15 images at a time and remove ADS!');
-      }
+        .snapshots()
+        .listen((snap) {
+      showBannerAdd(snap);
+    }, onError: (err) {
+      developer.log(e.toString(), name: 'my.app.home_page.checkIsPremium');
+      _isPremium = false;
+    }, cancelOnError: false);
+    super.initState();
+  }
+
+  void showBannerAdd(snapshotData) {
+    setState(() {
+      _isPremium = snapshotData.data['paid'];
     });
+    if (!_isPremium) {
+      developer.log("Is premium is $_isPremium.");
+      AppAds.showBanner();
+      InfoBgAlertBox(
+          context: context,
+          title: 'Go Premium',
+          infoMessage: 'Manage up to 15 images at a time and remove ADS!');
+    }
   }
 
   @override
@@ -340,9 +339,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() async {
-    super.dispose();
+    sub.cancel();
     await Tflite.close();
     AppAds.dispose();
+    super.dispose();
   }
 
   signOut() async {
@@ -363,7 +363,7 @@ class _HomePageState extends State<HomePage> {
     developer.log('Is premium $paid.', name: 'my.app.home_page.goPremium');
 
     var userData = {'paid': paid ? paid : false};
-    await Firestore.instance
+    await db
         .collection('premiumUsers')
         .document(this.widget.userId)
         .setData(userData);
