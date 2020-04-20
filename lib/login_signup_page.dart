@@ -363,7 +363,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
             elevation: 5.0,
             shape: new RoundedRectangleBorder(
                 borderRadius: new BorderRadius.circular(30.0)),
-            color: Colors.blue,
+            color: Colors.teal,
             child: new Text(_isLoginForm ? 'Login' : 'Create account',
                 style: new TextStyle(fontSize: 20.0, color: Colors.white)),
             onPressed: _validateAndSubmit,
@@ -384,10 +384,10 @@ void showFloatingFlushbar(BuildContext context, String msg) {
     icon: Icon(
       Icons.info_outline,
       size: 28,
-      color: Colors.blue.shade300,
+      color: Colors.teal.shade300,
     ),
     backgroundGradient: LinearGradient(
-      colors: [Colors.blue.shade600, Colors.blueAccent.shade700],
+      colors: [Colors.teal.shade600, Colors.tealAccent.shade700],
       stops: [0.6, 1],
     ),
     boxShadows: [

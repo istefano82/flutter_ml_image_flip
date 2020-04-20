@@ -87,6 +87,7 @@ class _HomePageState extends State<HomePage> {
     return new MaterialApp(
         home: new Scaffold(
       appBar: new AppBar(
+        backgroundColor: Colors.teal,
         actions: <Widget>[
           IconButton(
               icon: Icon(Icons.help), onPressed: showHelp, color: Colors.white),
@@ -104,6 +105,7 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.teal,
         child: Icon(Icons.image),
         onPressed: loadAssets,
         tooltip: "Upload images.",
@@ -116,21 +118,21 @@ class _HomePageState extends State<HomePage> {
                 child: new Text('Go Premium',
                     style: new TextStyle(
                       fontSize: 17.0,
-                      color: Colors.blueAccent,
+                      color: Colors.teal,
                     )),
                 onPressed: goPremium)),
         FlatButton(
           child: new Text('Flip Images',
               style: new TextStyle(
                 fontSize: 17.0,
-                color: Colors.blueAccent,
+                color: Colors.teal,
               )),
           onPressed: flipImages,
         ),
         IconButton(
           icon: Icon(Icons.save_alt), //Text("Save Images"),
           onPressed: rotateSaveImages,
-          color: Colors.blue,
+          color: Colors.teal,
         ),
       ],
     ));

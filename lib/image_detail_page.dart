@@ -55,15 +55,18 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
   Widget build(BuildContext context) {
     return new WillPopScope(
       child: Scaffold(
-        appBar: new AppBar(automaticallyImplyLeading: false, actions: <Widget>[
-          Container(
-            margin: const EdgeInsets.fromLTRB(0, 0, 130, 0),
-            child: IconButton(
-                icon: Icon(Icons.help),
-                onPressed: showHelp,
-                color: Colors.white),
-          )
-        ]),
+        appBar: new AppBar(
+            backgroundColor: Colors.teal,
+            automaticallyImplyLeading: false,
+            actions: <Widget>[
+              Container(
+                margin: const EdgeInsets.fromLTRB(0, 0, 130, 0),
+                child: IconButton(
+                    icon: Icon(Icons.help),
+                    onPressed: showHelp,
+                    color: Colors.white),
+              )
+            ]),
         body: Container(
           padding: EdgeInsets.all(12.0),
           alignment: Alignment.center,
@@ -88,11 +91,16 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
                   ),
                 ),
               ),
-              RaisedButton(
-                  child: Text("Back"),
+              new RaisedButton(
+                  elevation: 5.0,
+                  shape: new RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(30.0)),
+                  color: Colors.teal,
+                  child: new Text('Back',
+                      style:
+                          new TextStyle(fontSize: 20.0, color: Colors.white)),
                   onPressed: () {
-                    _updateImageAngles(
-                        context); // data back to the first screen},
+                    _updateImageAngles(context);
                   }),
             ],
           ),

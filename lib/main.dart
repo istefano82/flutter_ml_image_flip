@@ -4,7 +4,7 @@ import 'package:fluter_image_flip/root_page.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
 void main() {
-    InAppPurchaseConnection.enablePendingPurchases();
+  InAppPurchaseConnection.enablePendingPurchases();
   runApp(new MyApp());
 }
 
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
         title: 'Flutter login demo',
         debugShowCheckedModeBanner: false,
         theme: new ThemeData(
-          primarySwatch: Colors.blue,
+          primarySwatch: Colors.teal,
         ),
         home: new RootPage(auth: new Auth()));
   }
