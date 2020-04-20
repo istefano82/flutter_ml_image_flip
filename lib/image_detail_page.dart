@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:photo_view/photo_view.dart';
-import 'package:quiver/strings.dart';
 
 import 'home_page.dart';
 
