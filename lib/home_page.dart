@@ -73,8 +73,7 @@ class _HomePageState extends State<HomePage> {
       }
       if (!_isPremium) {
         developer.log("Is premium is $_isPremium.");
-        //TODO enable banner ADD for production
-        // AppAds.showBanner();
+        AppAds.showBanner();
         InfoBgAlertBox(
             context: context,
             title: 'Go Premium',
