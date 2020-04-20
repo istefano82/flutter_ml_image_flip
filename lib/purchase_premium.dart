@@ -30,11 +30,10 @@ class _MarketScreenState extends State<MarketScreen> {
   @override
   void dispose() {
     try {
-            subscription.cancel();
-
+      subscription.cancel();
     } on NoSuchMethodError {
-      developer.log('IAP StreamSubscription not available.', 
-      name: 'my.app.purchase_premium.dispose');
+      developer.log('IAP StreamSubscription not available.',
+          name: 'my.app.purchase_premium.dispose');
     }
     super.dispose();
   }
@@ -94,15 +93,14 @@ class _MarketScreenState extends State<MarketScreen> {
     verifyPurchase();
   }
 
-  //@ TODO remove or comment consume premium for production
-  void consumePremium(ProductDetails prod) async {
-    PurchaseDetails purchase = hasPurchased(prod.id);
-    var res = await iap.consumePurchase(purchase);
-    await getPastPurchases();
-    developer.log("Consuming product result is $res",
-        name: 'my.app.purchase_premium.consumePremium');
-    paid = false;
-  }
+  // void consumePremium(ProductDetails prod) async {
+  //   PurchaseDetails purchase = hasPurchased(prod.id);
+  //   var res = await iap.consumePurchase(purchase);
+  //   await getPastPurchases();
+  //   developer.log("Consuming product result is $res",
+  //       name: 'my.app.purchase_premium.consumePremium');
+  //   paid = false;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -133,11 +131,11 @@ class _MarketScreenState extends State<MarketScreen> {
                   onPressed: () {
                     returnPaid(context); // data back to the first screen},
                   }),
-              RaisedButton(
-                  child: Text("Consume premium"),
-                  onPressed: () {
-                    consumePremium(products[0]);
-                  }),
+              // RaisedButton(
+              //     child: Text("Consume premium"),
+              //     onPressed: () {
+              //       consumePremium(products[0]);
+              //     }),
             ],
           ),
         ),
