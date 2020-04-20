@@ -6,17 +6,21 @@ import 'package:ads/ads.dart';
 
 class AppAds {
   static Ads _ads;
-//TODO use own production app and ads IDs
   static final String _appId = Platform.isAndroid
-      ? 'ca-app-pub-3940256099942544~3347511713'
+      ? 'ca-app-pub-5263866612878215~5952960563'
+      // TODO Use real APp store app ID
       : 'ca-app-pub-3940256099942544~1458002511';
 
   static final String _bannerUnitId = Platform.isAndroid
-      ? 'ca-app-pub-3940256099942544/6300978111'
+      ? 'ca-app-pub-5263866612878215/4594666924'
+      // TODO Use real Appstore  store banner ID
+
       : 'ca-app-pub-3940256099942544/2934735716';
 
   static final String _screenUnitId = Platform.isAndroid
-      ? 'ca-app-pub-3940256099942544/1033173712'
+      ? 'ca-app-pub-5263866612878215/5010487944'
+      // TODO Use real Appstore  store screenunit ID
+
       : 'ca-app-pub-3940256099942544/4411468910';
 
   /// Assign a listener.
