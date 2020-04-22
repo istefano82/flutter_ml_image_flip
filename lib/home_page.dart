@@ -83,8 +83,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-        home: new Scaffold(
+    return new Scaffold(
       appBar: new AppBar(
         backgroundColor: Colors.teal,
         actions: <Widget>[
@@ -134,7 +133,7 @@ class _HomePageState extends State<HomePage> {
           color: Colors.teal,
         ),
       ],
-    ));
+    );
   }
 
   Future rotatePressedImage(
@@ -339,10 +338,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() async {
+    super.dispose();
     sub.cancel();
     await Tflite.close();
     AppAds.dispose();
-    super.dispose();
   }
 
   signOut() async {
