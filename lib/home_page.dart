@@ -229,7 +229,7 @@ class _HomePageState extends State<HomePage> {
     var pr1 = new ProgressDialog(context,
         type: ProgressDialogType.Download,
         isDismissible: false,
-        showLogs: false);
+        showLogs: true);
     pr1.style(
       progress: 1.0,
       message: "Saving your images...",
@@ -242,8 +242,8 @@ class _HomePageState extends State<HomePage> {
           color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.w600),
     );
     List<int> imageListByteData;
+    await pr1.show();
     for (var image in enumerate(imageAssets)) {
-      pr1.show();
       var progressVal = image.index + 1;
       pr1.update(
         progress: progressVal.toDouble(),
@@ -264,9 +264,7 @@ class _HomePageState extends State<HomePage> {
       );
       await ImageGallerySaver.saveImage(result);
     }
-    pr1.hide();
-    print(pr1.isShowing());
-    pr1.dismiss();
+    await pr1.hide();
     showFloatingFlushbar(context, 'Images saved!');
     setState(() {
       imageAssets = List<Asset>();
@@ -295,7 +293,7 @@ class _HomePageState extends State<HomePage> {
       messageTextStyle: TextStyle(
           color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.w600),
     );
-    pr.show();
+    await pr.show();
     for (var image in enumerate(imageAssets)) {
       List<int> imageData = await imgByteToList(image);
       var progressVal = image.index + 1;
@@ -326,7 +324,7 @@ class _HomePageState extends State<HomePage> {
         continue;
       }
     }
-    pr.hide();
+    await pr.hide();
   }
 
   Future<List<int>> imgByteToList(IndexedValue<Asset> image) async {
