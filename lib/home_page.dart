@@ -221,9 +221,33 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Future<void> rotateSaveImages() async {
+  Future rotateSaveImages() async {
+    if (imageAssets.isEmpty) {
+      showFloatingFlushbar(context, 'No images to save!');
+      return null;
+    }
+    var pr1 = new ProgressDialog(context,
+        type: ProgressDialogType.Download,
+        isDismissible: false,
+        showLogs: false);
+    pr1.style(
+      progress: 1.0,
+      message: "Saving your images...",
+      progressWidget: Container(
+          padding: EdgeInsets.all(8.0), child: CircularProgressIndicator()),
+      maxProgress: imageAssets.length.toDouble(),
+      progressTextStyle: TextStyle(
+          color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.w400),
+      messageTextStyle: TextStyle(
+          color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.w600),
+    );
     List<int> imageListByteData;
     for (var image in enumerate(imageAssets)) {
+      pr1.show();
+      var progressVal = image.index + 1;
+      pr1.update(
+        progress: progressVal.toDouble(),
+      );
       try {
         imageListByteData = images[image.index];
       } on RangeError {
@@ -240,8 +264,10 @@ class _HomePageState extends State<HomePage> {
       );
       await ImageGallerySaver.saveImage(result);
     }
+    pr1.hide();
+    print(pr1.isShowing());
+    pr1.dismiss();
     showFloatingFlushbar(context, 'Images saved!');
-
     setState(() {
       imageAssets = List<Asset>();
       data.imageAngles =
@@ -250,6 +276,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future flipImages() async {
+    if (imageAssets.isEmpty) {
+      showFloatingFlushbar(context, 'No images to auto flip for you!');
+      return null;
+    }
     var pr = new ProgressDialog(context,
         type: ProgressDialogType.Download,
         isDismissible: false,
@@ -269,7 +299,6 @@ class _HomePageState extends State<HomePage> {
     for (var image in enumerate(imageAssets)) {
       List<int> imageData = await imgByteToList(image);
       var progressVal = image.index + 1;
-      print('Image index is $progressVal');
 
       pr.update(
         progress: progressVal.toDouble(),
