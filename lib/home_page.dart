@@ -251,9 +251,8 @@ class _HomePageState extends State<HomePage> {
       try {
         imageListByteData = images[image.index];
       } on RangeError {
-        continue;
+        imageListByteData = await imgByteToList(image);
       }
-
       var angle = data.imageAngles[image.index];
       ImageEditorOption option = ImageEditorOption();
       option.addOption(RotateOption(angle.toInt()));
