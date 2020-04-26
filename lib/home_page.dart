@@ -198,8 +198,8 @@ class _HomePageState extends State<HomePage> {
         selectedAssets: imageAssets,
         cupertinoOptions: CupertinoOptions(takePhotoIcon: "chat"),
         materialOptions: MaterialOptions(
-          actionBarColor: "#abcdef",
-          actionBarTitle: "Example App",
+          actionBarColor: "purple",
+          actionBarTitle: "Select Images",
           allViewTitle: "All Photos",
           useDetailsView: false,
           selectCircleStrokeColor: "#000000",
