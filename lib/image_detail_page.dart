@@ -56,7 +56,7 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
     return new WillPopScope(
       child: Scaffold(
         appBar: new AppBar(
-            backgroundColor: Colors.teal,
+            backgroundColor: Colors.purple,
             automaticallyImplyLeading: false,
             actions: <Widget>[
               Container(
@@ -95,7 +95,7 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
                   elevation: 5.0,
                   shape: new RoundedRectangleBorder(
                       borderRadius: new BorderRadius.circular(30.0)),
-                  color: Colors.teal,
+                  color: Colors.purple,
                   child: new Text('Back',
                       style:
                           new TextStyle(fontSize: 20.0, color: Colors.white)),

@@ -107,7 +107,7 @@ class _MarketScreenState extends State<MarketScreen> {
     return new WillPopScope(
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.teal,
+          backgroundColor: Colors.purple,
           automaticallyImplyLeading: false,
           title: Text(
               available ? 'Purchase Premium' : 'Premium service Not Available'),
@@ -120,10 +120,10 @@ class _MarketScreenState extends State<MarketScreen> {
                 Text(prod.title, style: Theme.of(context).textTheme.headline),
                 Text(prod.description),
                 Text(prod.price,
-                    style: TextStyle(color: Colors.greenAccent, fontSize: 60)),
+                    style: TextStyle(color: Colors.purpleAccent, fontSize: 60)),
                 FlatButton(
                   child: Text('Buy Premium'),
-                  color: Colors.green,
+                  color: Colors.purple,
                   onPressed: () => buyProduct(prod),
                 ),
               ],
@@ -131,7 +131,7 @@ class _MarketScreenState extends State<MarketScreen> {
                   elevation: 5.0,
                   shape: new RoundedRectangleBorder(
                       borderRadius: new BorderRadius.circular(30.0)),
-                  color: Colors.teal,
+                  color: Colors.purple,
                   child: new Text('Back',
                       style:
                           new TextStyle(fontSize: 20.0, color: Colors.white)),
