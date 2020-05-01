@@ -11,7 +11,7 @@ description: A new Flutter project.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.1+11
+version: 1.0.1+14
 
 environment:
   sdk: ">=2.2.2 <3.0.0"
@@ -52,7 +52,7 @@ dev_dependencies:
 flutter_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "/home/ivo/Pictures/new_image_flip_logo_1536x1536.jpg"
+  image_path: "/home/ivo/Downloads/new_image_flip_logo_1536x1536.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -71,7 +71,7 @@ flutter:
     - assets/imageflip.txt
     - assets/google_logo.png
     - assets/facebook_logo.png
-    - assets/image_flip_logo-512X512-no-bkg.png
+    - assets/new_image_flip_logo_512x512.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
   # For details regarding adding~ assets from package dependencies, see
