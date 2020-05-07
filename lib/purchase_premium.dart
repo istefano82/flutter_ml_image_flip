@@ -59,7 +59,7 @@ class _MarketScreenState extends State<MarketScreen> {
     ProductDetailsResponse response = await iap.queryProductDetails(ids);
     if (response.notFoundIDs.isNotEmpty) {
       var res = response.notFoundIDs;
-      developer.log("Google IAP query products eesponse is empty $res",
+      developer.log("Google IAP query products response is empty $res",
           name: 'my.app.purchase_premium.getProducts');
     }
     setState(() {
@@ -81,6 +81,10 @@ class _MarketScreenState extends State<MarketScreen> {
 
   void verifyPurchase() {
     PurchaseDetails purchase = hasPurchased(iapPremiumProductId);
+
+    if (purchase != null && purchase.pendingCompletePurchase) {
+      iap.completePurchase(purchase);
+    }
 
     if (purchase != null && purchase.status == PurchaseStatus.purchased) {
       paid = true;

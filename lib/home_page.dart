@@ -61,7 +61,7 @@ class _HomePageState extends State<HomePage> {
         .listen((snap) {
       showBannerAdd(snap);
     }, onError: (err) {
-      developer.log(e.toString(), name: 'my.app.home_page.checkIsPremium');
+      developer.log(e.toString(), name: 'my.app.home_page.initState');
       _isPremium = false;
     }, cancelOnError: false);
     super.initState();
@@ -109,6 +109,13 @@ class _HomePageState extends State<HomePage> {
         tooltip: "Upload images.",
         heroTag: 'upldImages',
       ),
+      // Place to show adds
+      bottomNavigationBar: BottomAppBar(
+          child: Container(
+              height: _isPremium ? 0.0 : 60.0,
+              child: Row(children: <Widget>[
+                Text(''),
+              ]))),
       persistentFooterButtons: <Widget>[
         Visibility(
             visible: !_isPremium,
