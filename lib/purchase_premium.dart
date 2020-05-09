@@ -163,3 +163,91 @@ class _MarketScreenState extends State<MarketScreen> {
     Navigator.pop(context, paid);
   }
 }
+
+
+class AppProducts {
+  static InAppPurchaseConnection iap = InAppPurchaseConnection.instance;
+  static bool available = false;
+  static bool paid = false;
+
+  static List<ProductDetails> products = [];
+  static List<PurchaseDetails> purchases = [];
+  static StreamSubscription subscription;
+
+  static int credits = 0;
+
+
+  static void dispose() {
+    try {
+      subscription.cancel();
+    } on NoSuchMethodError {
+      developer.log('IAP StreamSubscription not available.',
+          name: 'my.app.purchase_premium.dispose');
+    }
+  }
+
+  static void initialize() async {
+    available = await iap.isAvailable();
+
+    if (available) {
+      await getProducts();
+      await getPastPurchases();
+
+      verifyPurchase();
+
+      subscription = iap.purchaseUpdatedStream.listen((data) =>
+          () {
+        purchases.addAll(data);
+        verifyPurchase();
+      });
+    }
+  }
+
+  static Future<void> getProducts() async {
+    Set<String> ids = Set.from([iapPremiumProductId]);
+    ProductDetailsResponse response = await iap.queryProductDetails(ids);
+    if (response.notFoundIDs.isNotEmpty) {
+      var res = response.notFoundIDs;
+      developer.log("Google IAP query products response is empty $res",
+          name: 'my.app.purchase_premium.getProducts');
+    }
+    products = response.productDetails;
+  }
+
+  static Future<void> getPastPurchases() async {
+    QueryPurchaseDetailsResponse response = await iap.queryPastPurchases();
+    purchases = response.pastPurchases;
+  }
+
+  static PurchaseDetails hasPurchased(String pruductID) {
+    return purchases.firstWhere((purchase) => purchase.productID == pruductID,
+        orElse: () => null);
+  }
+
+  static void verifyPurchase() {
+    PurchaseDetails purchase = hasPurchased(iapPremiumProductId);
+
+    if (purchase != null && purchase.pendingCompletePurchase) {
+      iap.completePurchase(purchase);
+    }
+
+    if (purchase != null && purchase.status == PurchaseStatus.purchased) {
+      paid = true;
+    }
+  }
+
+  static void buyProduct(ProductDetails prod) {
+    final PurchaseParam purchaseParam = PurchaseParam(productDetails: prod);
+    iap.buyNonConsumable(purchaseParam: purchaseParam);
+    verifyPurchase();
+  }
+
+//  static void consumePremium(ProductDetails prod) async {
+//   PurchaseDetails purchase = hasPurchased(prod.id);
+//   var res = await iap.consumePurchase(purchase);
+//   await getPastPurchases();
+//   developer.log("Consuming product result is $res",
+//       name: 'my.app.purchase_premium.consumePremium');
+//   paid = false;
+// }
+}

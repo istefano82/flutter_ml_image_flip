@@ -26,17 +26,20 @@ class HomePage extends StatefulWidget {
   final BaseAuth auth;
   final VoidCallback onSignedOut;
   final String userId;
+
   @override
   State<StatefulWidget> createState() => new _HomePageState();
 }
 
 class Data {
   List<double> imageAngles;
+
   Data({this.imageAngles});
 }
 
 class _HomePageState extends State<HomePage> {
   final data = Data(imageAngles: []);
+
   // Switch Firestore to production
   final db = Firestore.instance;
   StreamSubscription sub;
@@ -53,13 +56,15 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     AppAds.init();
+    AppProducts.initialize();
     loadModel().then((val) {});
     sub = db
         .collection('premiumUsers')
         .document(this.widget.userId)
         .snapshots()
         .listen((snap) {
-      showBannerAdd(snap);
+      confirmPendingPurchases(snap);
+      showBannerAdd();
     }, onError: (err) {
       developer.log(e.toString(), name: 'my.app.home_page.initState');
       _isPremium = false;
@@ -67,10 +72,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
-  void showBannerAdd(snapshotData) {
-    setState(() {
-      _isPremium = snapshotData.data['paid'];
-    });
+  void showBannerAdd() {
     if (!_isPremium) {
       developer.log("Is premium is $_isPremium.");
       AppAds.showBanner();
@@ -78,6 +80,23 @@ class _HomePageState extends State<HomePage> {
           context: context,
           title: 'Go Premium',
           infoMessage: 'Manage up to 15 images at a time and remove ADS!');
+    } else {
+      AppAds.hideBanner();
+    }
+  }
+
+  Future<void> confirmPendingPurchases(snapshotData) async {
+    // Make sure  delayed purchase which is confirmed updates DB with new status
+    if (!_isPremium && AppProducts.paid) {
+      var userData = {'paid': AppProducts.paid};
+      await updateDbPremium(userData);
+      setState(() {
+        _isPremium = AppProducts.paid;
+      });
+    } else {
+      setState(() {
+        _isPremium = snapshotData.data['paid'];
+      });
     }
   }
 
@@ -375,6 +394,7 @@ class _HomePageState extends State<HomePage> {
     sub.cancel();
     await Tflite.close();
     AppAds.dispose();
+    AppProducts.dispose();
   }
 
   signOut() async {
@@ -395,14 +415,18 @@ class _HomePageState extends State<HomePage> {
     developer.log('Is premium $paid.', name: 'my.app.home_page.goPremium');
 
     var userData = {'paid': paid ? paid : false};
-    await db
-        .collection('premiumUsers')
-        .document(this.widget.userId)
-        .setData(userData);
+    await updateDbPremium(userData);
 
     setState(() {
       _isPremium = paid;
     });
+  }
+
+  Future updateDbPremium(Map<String, bool> userData) async {
+    await db
+        .collection('premiumUsers')
+        .document(this.widget.userId)
+        .setData(userData);
   }
 
   void showHelp() {
