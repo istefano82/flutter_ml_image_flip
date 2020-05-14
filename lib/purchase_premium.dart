@@ -119,7 +119,7 @@ class _MarketScreenState extends State<MarketScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               for (var prod in products) ...[
-                Text(prod.title, style: Theme.of(context).textTheme.headline),
+                Text(prod.title, style: Theme.of(context).textTheme.headline5),
                 Text(prod.description),
                 Text(prod.price,
                     style: TextStyle(color: Colors.purpleAccent, fontSize: 60)),
@@ -141,11 +141,11 @@ class _MarketScreenState extends State<MarketScreen> {
                     returnPaid(context); // data back to the first screen},
                   }),
 
-               RaisedButton(
-                   child: Text("Consume premium"),
-                   onPressed: () {
-                     consumePremium(products[0]);
-                   }),
+//               RaisedButton(
+//                   child: Text("Consume premium"),
+//                   onPressed: () {
+//                     consumePremium(products[0]);
+//                   }),
             ],
           ),
         ),
