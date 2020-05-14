@@ -379,6 +379,7 @@ void showSimpleErrorFlushbar(BuildContext context, String msg) {
 void showFloatingFlushbar(BuildContext context, String msg) {
   Flushbar(
     margin: EdgeInsets.all(10),
+    flushbarPosition: FlushbarPosition.TOP,
     borderRadius: 8,
     duration: Duration(seconds: 3),
     icon: Icon(
