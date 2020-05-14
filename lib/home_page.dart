@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flushbar/flushbar_helper.dart';
 import 'package:fluter_image_flip/purchase_premium.dart';
 import 'package:flutter_awesome_alert_box/flutter_awesome_alert_box.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:quiver/iterables.dart';
 import 'package:tflite/tflite.dart';
@@ -38,6 +39,14 @@ class Data {
 }
 
 class _HomePageState extends State<HomePage> {
+  InAppPurchaseConnection iap = InAppPurchaseConnection.instance;
+  bool playStoreConnectionAvailable = false;
+  bool playStoreProductPaid = false;
+
+  List<ProductDetails> playStoreProducts = [];
+  List<PurchaseDetails> playStorePurchases = [];
+  StreamSubscription playStoreSubscription;
+
   final data = Data(imageAngles: []);
 
   // Switch Firestore to production
@@ -56,20 +65,81 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     AppAds.init();
-    AppProducts.initialize();
+    playStoreInitialize();
     loadModel().then((val) {});
     sub = db
         .collection('premiumUsers')
         .document(this.widget.userId)
         .snapshots()
         .listen((snap) {
-      confirmPendingPurchases(snap);
+      updatePremium(snap);
       showBannerAdd();
     }, onError: (err) {
       developer.log(e.toString(), name: 'my.app.home_page.initState');
       _isPremium = false;
     }, cancelOnError: false);
     super.initState();
+  }
+
+  void playStoreInitialize() async {
+    playStoreConnectionAvailable = await iap.isAvailable();
+
+    if (playStoreConnectionAvailable) {
+      await getProducts();
+      await getPastPurchases();
+
+      verifyPurchase();
+
+      playStoreSubscription =
+          iap.purchaseUpdatedStream.listen((data) => setState(() async {
+                playStorePurchases.addAll(data);
+                verifyPurchase();
+              }));
+    }
+  }
+
+  Future<void> getProducts() async {
+    Set<String> ids = Set.from([iapPremiumProductId]);
+    ProductDetailsResponse response = await iap.queryProductDetails(ids);
+    if (response.notFoundIDs.isNotEmpty) {
+      var res = response.notFoundIDs;
+      developer.log("Google IAP query products response is empty $res",
+          name: 'my.app.purchase_premium.getProducts');
+    }
+    setState(() {
+      playStoreProducts = response.productDetails;
+    });
+  }
+
+  Future<void> getPastPurchases() async {
+    QueryPurchaseDetailsResponse response = await iap.queryPastPurchases();
+    setState(() {
+      playStorePurchases = response.pastPurchases;
+    });
+  }
+
+  PurchaseDetails hasPurchased(String pruductID) {
+    return playStorePurchases.firstWhere(
+        (purchase) => purchase.productID == pruductID,
+        orElse: () => null);
+  }
+
+  Future<void> verifyPurchase() async {
+    PurchaseDetails purchase = hasPurchased(iapPremiumProductId);
+
+    if (purchase != null && purchase.pendingCompletePurchase) {
+      iap.completePurchase(purchase);
+    }
+
+    if (purchase != null && purchase.status == PurchaseStatus.purchased) {
+      playStoreProductPaid = true;
+    }
+    // This will update Firestore DB paid flag
+    // And Firestore DB sub will update the is _isPremium App flag afterwards
+    if (!_isPremium && playStoreProductPaid) {
+      var userData = {'paid': playStoreProductPaid};
+      await updateDbPremium(userData);
+    }
   }
 
   void showBannerAdd() {
@@ -85,19 +155,10 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<void> confirmPendingPurchases(snapshotData) async {
-    // Make sure  delayed purchase which is confirmed updates DB with new status
-    if (!_isPremium && AppProducts.paid) {
-      var userData = {'paid': AppProducts.paid};
-      await updateDbPremium(userData);
-      setState(() {
-        _isPremium = AppProducts.paid;
-      });
-    } else {
-      setState(() {
-        _isPremium = snapshotData.data['paid'];
-      });
-    }
+  Future<void> updatePremium(snapshotData) async {
+    setState(() {
+      _isPremium = snapshotData.data['paid'];
+    });
   }
 
   @override
@@ -391,10 +452,15 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() async {
     super.dispose();
+    try {
+      playStoreSubscription.cancel();
+    } on NoSuchMethodError {
+      developer.log('IAP StreamSubscription not available.',
+          name: 'my.app.purchase_premium.dispose');
+    }
     sub.cancel();
     await Tflite.close();
     AppAds.dispose();
-    AppProducts.dispose();
   }
 
   signOut() async {
