@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-        title: 'Flutter login demo',
+        title: 'Auto Image Flip',
         debugShowCheckedModeBanner: false,
         theme: new ThemeData(
           primarySwatch: Colors.purple,

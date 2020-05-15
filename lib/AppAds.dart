@@ -26,7 +26,6 @@ class AppAds {
   /// Assign a listener.
   static MobileAdListener _eventListener = (MobileAdEvent event) {
     if (event == MobileAdEvent.clicked) {
-      print("_eventListener: The opened ad is clicked on.");
     }
   };
 

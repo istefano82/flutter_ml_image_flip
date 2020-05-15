@@ -89,12 +89,15 @@ class _HomePageState extends State<HomePage> {
       await getPastPurchases();
 
       verifyPurchase();
-
+      // Figure out why subscription is not working for slow approving credit cards.
+      // After payment is processed by Google play updates are not received by the subscription
+      // User has to log out and log in to check the Premium working.
       playStoreSubscription =
-          iap.purchaseUpdatedStream.listen((data) => setState(() async {
+          iap.purchaseUpdatedStream.listen((data) => () async {
                 playStorePurchases.addAll(data);
-                verifyPurchase();
-              }));
+                await getPastPurchases();
+                await verifyPurchase();
+              });
     }
   }
 
@@ -127,8 +130,8 @@ class _HomePageState extends State<HomePage> {
   Future<void> verifyPurchase() async {
     PurchaseDetails purchase = hasPurchased(iapPremiumProductId);
 
-    if (purchase != null && purchase.pendingCompletePurchase) {
-      iap.completePurchase(purchase);
+    if (purchase != null && purchase.status == PurchaseStatus.pending) {
+      await iap.completePurchase(purchase);
     }
 
     if (purchase != null && purchase.status == PurchaseStatus.purchased) {
